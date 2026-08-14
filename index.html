@@ -1,0 +1,3620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Michael Jackson Mirror</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap');
+
+  :root{
+    --black: #000000;
+    --floor: #0d0d0d;
+    --glove: #ffffff;
+    --gold: #e8b93f;
+    --crimson: #b8283f;
+    --line: rgba(255,255,255,0.18);
+    --card-grad-1: #141414;
+    --card-grad-2: #000000;
+    --sub-text: #d8d8d8;
+    --muted-text: #a0a0a0;
+    --faint-text: #707070;
+    --track-bg: rgba(255,255,255,0.12);
+    --panel-tint: rgba(255,255,255,0.06);
+    --bg-glow-1: rgba(155,107,217,0.16);
+    --bg-glow-2: rgba(62,207,178,0.14);
+    --bg-glow-3: rgba(232,185,63,0.16);
+    --violet: #9b6bd9;
+    --teal: #3ecfb2;
+    --pink: #e8578f;
+    --azure: #4a9be8;
+    --lime: #b8e83f;
+    --orange: #f2924a;
+    --sun: #ffcf56;
+    --coral: #ff7a6e;
+    --mint: #6ee7c0;
+    --sky: #6ec3ff;
+    --rhinestone: #d6c8ff;
+    --champagne: #f0dfa8;
+    --rubyred: #e0304f;
+    --sequin: #c0c9d6;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 700px 400px at 15% -5%, var(--bg-glow-1), transparent 60%),
+      radial-gradient(ellipse 700px 400px at 85% 10%, var(--bg-glow-2), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 50% -10%, var(--bg-glow-3), transparent 60%),
+      var(--black);
+    color:var(--glove);
+    font-family:'Space Grotesk', sans-serif;
+    min-height:100vh;
+    padding:28px 16px 60px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  .app-container{
+    max-width:560px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+  }
+
+  .header-block{
+    text-align:center;
+    width:100%;
+  }
+
+  .mode-switch{
+    display:flex;
+    gap:6px;
+    background:var(--panel-tint);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:4px;
+    margin-bottom:16px;
+  }
+  .mode-btn{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:12px;
+    letter-spacing:0.02em;
+    padding:7px 14px;
+    border-radius:9px;
+    border:none;
+    background:transparent;
+    color:var(--sub-text);
+    cursor:pointer;
+  }
+  .mode-btn.active{
+    background:var(--gold);
+    color:#1a1305;
+  }
+  .mode-btn svg{ width:14px; height:14px; }
+
+  /* ===== iPad mode ===== */
+  .app-container.mode-ipad{ max-width:700px; }
+  .mode-ipad .stage-wrap{ max-width:640px; }
+  .mode-ipad .score-panel, .mode-ipad .tutorial-panel, .mode-ipad .history, .mode-ipad .controls{ max-width:640px; }
+  .mode-ipad .move-guide{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+  .mode-ipad h1{ font-size:56px; }
+
+  /* ===== Desktop mode ===== */
+  .app-container.mode-desktop{
+    max-width:1080px;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:0;
+  }
+  .mode-desktop .header-block{ margin-bottom:6px; }
+  .mode-desktop .top-tabs{ max-width:640px; margin-left:auto; margin-right:auto; }
+  .mode-desktop .mode-switch{ margin-left:auto; margin-right:auto; }
+
+  .mode-desktop .stage-layout{
+    display:grid;
+    grid-template-columns:640px 1fr;
+    gap:28px;
+    align-items:start;
+    width:100%;
+  }
+  .mode-desktop .stage-layout .stage-col{ display:flex; flex-direction:column; align-items:center; }
+  .mode-desktop .stage-layout .side-col{ display:flex; flex-direction:column; align-items:stretch; gap:16px; }
+  .mode-desktop .stage-wrap{ max-width:640px; }
+  .mode-desktop .controls{ max-width:640px; }
+  .mode-desktop .score-panel{ max-width:100%; margin-top:0; }
+  .mode-desktop .history{ max-width:100%; }
+  .mode-desktop .foot-note{ max-width:640px; }
+  .mode-desktop .tutorial-panel{ max-width:900px; }
+  .mode-desktop .move-guide{ grid-template-columns:1fr 1fr 1fr; }
+  .mode-desktop h1{ font-size:56px; }
+
+  .eyebrow{
+    font-size:11px;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--gold);
+    opacity:0.85;
+    margin-bottom:6px;
+  }
+
+  .mj-icon-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .mj-icon-row svg{
+    width:20px;
+    height:20px;
+    opacity:0.8;
+  }
+  .mj-glove{ fill:var(--glove); }
+  .mj-fedora{ fill:var(--black); stroke:var(--gold); stroke-width:1.5; }
+  .mj-sparkle{ fill:var(--rhinestone); }
+
+  h1{
+    font-family:'Bebas Neue', sans-serif;
+    font-size:clamp(38px,7vw,64px);
+    letter-spacing:0.04em;
+    margin:0 0 4px;
+    line-height:0.95;
+    background:linear-gradient(180deg,#fff, var(--gold) 120%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+
+  .sub{
+    font-size:13px;
+    color:var(--sub-text);
+    margin-bottom:26px;
+    text-align:center;
+    max-width:440px;
+  }
+
+  .stage-wrap{
+    position:relative;
+    width:100%;
+    max-width:560px;
+    aspect-ratio:4/3;
+    border-radius:18px;
+    overflow:hidden;
+    background:var(--floor);
+    box-shadow:
+      0 0 0 1px var(--line),
+      0 30px 60px -20px rgba(0,0,0,0.7),
+      inset 0 0 80px rgba(0,0,0,0.6);
+  }
+
+  .spotlight{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(ellipse 70% 60% at 50% 30%, rgba(232,185,63,0.14), transparent 65%),
+      radial-gradient(ellipse 40% 40% at 20% 70%, rgba(155,107,217,0.08), transparent 60%),
+      radial-gradient(ellipse 40% 40% at 80% 70%, rgba(62,207,178,0.08), transparent 60%);
+    pointer-events:none;
+    z-index:3;
+  }
+
+  video, canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    transform:scaleX(-1);
+  }
+
+  .floor-line{
+    position:absolute;
+    left:0; right:0; bottom:14%;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(232,185,63,0.4), transparent);
+    z-index:2;
+  }
+
+  .hud{
+    position:absolute;
+    top:12px; left:12px; right:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    z-index:4;
+    pointer-events:none;
+  }
+
+  .badge{
+    background:rgba(10,10,12,0.55);
+    backdrop-filter:blur(6px);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:6px 12px;
+    font-size:11px;
+    letter-spacing:0.06em;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+
+  .dot{
+    width:7px; height:7px; border-radius:50%;
+    background:#555;
+  }
+  .dot.live{ background:var(--crimson); box-shadow:0 0 10px var(--crimson); animation:pulse 1.2s infinite; }
+  .dot.ready{ background:#4caf6a; box-shadow:0 0 8px #4caf6a; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+
+  .countdown{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Bebas Neue', sans-serif;
+    font-size:140px;
+    color:var(--gold);
+    text-shadow:0 0 40px rgba(232,185,63,0.6);
+    z-index:5;
+    background:rgba(0,0,0,0.35);
+  }
+
+  .idle-overlay{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    z-index:5;
+    background:rgba(10,10,12,0.7);
+    text-align:center;
+    padding:20px;
+  }
+
+  .idle-overlay p{
+    margin:0;
+    font-size:13px;
+    color:#c9c7c0;
+    max-width:320px;
+  }
+
+  select{
+    background:var(--black);
+    color:var(--glove);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 14px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:14px;
+    width:260px;
+  }
+  .combo-select{ width:100%; }
+  #comboCountInput::-webkit-outer-spin-button,
+  #comboCountInput::-webkit-inner-spin-button{
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  #comboCountInput:focus{ outline: 1px solid var(--violet); border-radius: 6px; }
+
+  button{
+    font-family:'Bebas Neue', sans-serif;
+    letter-spacing:0.06em;
+    font-size:20px;
+    padding:12px 30px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    transition:transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  button:active{ transform:scale(0.96); }
+
+  .btn-primary{
+    background:linear-gradient(180deg, var(--gold), #c99a2e);
+    color:#1a1305;
+    box-shadow:0 6px 20px -6px rgba(232,185,63,0.6);
+  }
+  .btn-primary:disabled{
+    opacity:0.4;
+    cursor:not-allowed;
+    box-shadow:none;
+  }
+
+  .btn-ghost{
+    background:transparent;
+    color:var(--glove);
+    border:1px solid var(--line);
+  }
+
+  .controls{
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+    align-items:center;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .timer-fill{
+    position:absolute;
+    bottom:0; left:0;
+    height:4px;
+    background:var(--gold);
+    z-index:4;
+    transition:width 0.1s linear;
+  }
+
+  .score-panel{
+    width:100%;
+    max-width:560px;
+    margin-top:22px;
+    background:linear-gradient(160deg, var(--card-grad-1), var(--card-grad-2));
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 24px;
+    display:none;
+  }
+  .score-panel.show{ display:block; animation:rise 0.4s ease; }
+  @keyframes rise{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+
+  .new-best-banner{
+    display:none;
+    align-items:center;
+    gap:8px;
+    background:linear-gradient(90deg, rgba(232,185,63,0.18), rgba(242,146,74,0.1));
+    border:1px solid var(--gold);
+    border-radius:10px;
+    padding:8px 14px;
+    font-size:12.5px;
+    color:var(--gold);
+    font-weight:600;
+    letter-spacing:0.03em;
+    margin-bottom:14px;
+  }
+  .new-best-banner.show{ display:flex; animation:bestPulse 0.6s ease; }
+  @keyframes bestPulse{
+    0%{ transform:scale(0.9); opacity:0; }
+    60%{ transform:scale(1.03); opacity:1; }
+    100%{ transform:scale(1); }
+  }
+
+  .score-row{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:14px;
+  }
+
+  .score-number{
+    font-family:'Bebas Neue', sans-serif;
+    font-size:76px;
+    line-height:1;
+    background:linear-gradient(135deg, var(--gold), var(--orange) 60%, var(--pink));
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+  }
+  .score-outof{ font-size:20px; color:var(--muted-text); }
+
+  .move-name{
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--crimson);
+    margin-bottom:2px;
+  }
+
+  .metric-bars{
+    display:grid;
+    gap:10px;
+    margin:16px 0 18px;
+  }
+  .metric{
+    display:grid;
+    grid-template-columns:80px 1fr 34px;
+    align-items:center;
+    gap:10px;
+    font-size:12px;
+    color:var(--sub-text);
+  }
+  .bar-track{
+    height:6px;
+    background:var(--track-bg);
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .bar-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--crimson), var(--gold));
+    border-radius:3px;
+    width:0%;
+    transition:width 0.8s cubic-bezier(.2,.8,.2,1);
+  }
+  .metric:nth-child(4n+1) .bar-fill{ background:linear-gradient(90deg, var(--crimson), var(--gold)); }
+  .metric:nth-child(4n+2) .bar-fill{ background:linear-gradient(90deg, var(--violet), var(--pink)); }
+  .metric:nth-child(4n+3) .bar-fill{ background:linear-gradient(90deg, var(--azure), var(--teal)); }
+  .metric:nth-child(4n+4) .bar-fill{ background:linear-gradient(90deg, var(--orange), var(--lime)); }
+
+  .tips{
+    border-top:1px solid var(--line);
+    padding-top:14px;
+  }
+  .tips h3{
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted-text);
+    margin:0 0 8px;
+  }
+  .tips ul{ margin:0; padding-left:18px; }
+  .tips li{ font-size:13.5px; line-height:1.5; margin-bottom:6px; color:var(--glove); }
+
+  .history{
+    width:100%;
+    max-width:560px;
+    margin-top:16px;
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .history-chip{
+    background:var(--panel-tint);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:5px 10px;
+    font-size:11px;
+    color:var(--sub-text);
+  }
+  .history-chip.tier-high{ border-color:var(--teal); color:var(--teal); }
+  .history-chip.tier-mid{ border-color:var(--azure); color:var(--azure); }
+  .history-chip.tier-low{ border-color:var(--pink); color:var(--pink); }
+  .history-chip.best{
+    border-color:var(--gold);
+    color:var(--gold);
+    background:rgba(232,185,63,0.08);
+  }
+
+  .foot-note{
+    margin-top:20px;
+    font-size:11px;
+    color:var(--faint-text);
+    max-width:480px;
+    text-align:center;
+    line-height:1.5;
+  }
+
+  .top-tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:18px;
+    background:var(--panel-tint);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:4px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .top-tab{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:12.5px;
+    letter-spacing:0.03em;
+    padding:8px 16px;
+    border-radius:9px;
+    border:none;
+    background:transparent;
+    color:var(--sub-text);
+    cursor:pointer;
+  }
+  .top-tab.active{
+    background:var(--gold);
+    color:#1a1305;
+  }
+  #tabCombo.active{ background:var(--pink); color:#1a1305; }
+  #tabVoice.active{ background:var(--violet); color:#1a1305; }
+  #tabTutorial.active{ background:var(--teal); color:#1a1305; }
+  #tabFriends.active{ background:var(--azure); color:#1a1305; }
+
+  .panel{ width:100%; max-width:560px; display:flex; flex-direction:column; align-items:center; }
+  .panel.hidden{ display:none; }
+
+  .tutorial-panel{
+    width:100%;
+    max-width:560px;
+    background:linear-gradient(160deg, var(--card-grad-1), var(--card-grad-2));
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 24px;
+  }
+
+  .tutorial-section{ margin-bottom:22px; }
+  .tutorial-section:last-child{ margin-bottom:0; }
+
+  .tutorial-section h2{
+    font-family:'Bebas Neue', sans-serif;
+    font-size:20px;
+    letter-spacing:0.03em;
+    color:var(--gold);
+    margin:0 0 10px;
+  }
+
+  .step-list{
+    margin:0;
+    padding-left:20px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .step-list li{
+    font-size:13.5px;
+    line-height:1.5;
+    color:var(--glove);
+  }
+
+  .move-guide{
+    display:grid;
+    gap:14px;
+  }
+  .move-card{
+    background:var(--panel-tint);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 16px;
+  }
+  .move-card h3{
+    font-size:14px;
+    margin:0 0 6px;
+    color:var(--glove);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .move-card .diff{
+    font-size:9.5px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    padding:2px 7px;
+    border-radius:6px;
+    background:rgba(184,40,63,0.18);
+    color:#e6899a;
+  }
+  .move-card .diff.easy{ background:rgba(76,175,106,0.15); color:#7fd39a; }
+  .move-card .diff.mid{ background:rgba(232,185,63,0.15); color:var(--gold); }
+  .move-card .diff.hard{ background:rgba(184,40,63,0.18); color:#e6899a; }
+  .move-card p{
+    margin:0;
+    font-size:12.5px;
+    line-height:1.55;
+    color:var(--sub-text);
+  }
+
+  .camera-error-box{
+    text-align:left;
+    background:rgba(184,40,63,0.08);
+    border:1px solid rgba(184,40,63,0.3);
+    border-radius:10px;
+    padding:14px 16px;
+    font-size:12px;
+    line-height:1.55;
+    color:#e6c3ca;
+    max-width:340px;
+  }
+  .camera-error-box strong{ color:#f0a6b3; }
+  .camera-error-box a{ color:var(--gold); }
+
+  .sj-metric{
+    display:grid;
+    grid-template-columns:110px 1fr 30px;
+    align-items:center;
+    gap:10px;
+    font-size:12px;
+    color:var(--sub-text);
+    margin-bottom:12px;
+  }
+  .sj-metric input[type=range]{
+    -webkit-appearance:none;
+    width:100%;
+    height:6px;
+    border-radius:3px;
+    background:var(--track-bg);
+    outline:none;
+  }
+  .sj-metric input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:16px; height:16px;
+    border-radius:50%;
+    background:var(--gold);
+    cursor:pointer;
+    box-shadow:0 0 8px rgba(232,185,63,0.5);
+  }
+  .sj-val{ color:var(--gold); text-align:right; }
+
+  .ref-video{
+    margin-top:10px;
+    border-radius:8px;
+    overflow:hidden;
+    aspect-ratio:16/9;
+    background:#000;
+    position:relative;
+    display:block;
+    text-decoration:none;
+  }
+  .ref-video img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    opacity:0.85;
+  }
+  .ref-video .play-badge{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+  }
+  .ref-video .play-badge span{
+    width:52px; height:52px;
+    border-radius:50%;
+    background:rgba(10,10,12,0.7);
+    border:1px solid rgba(245,243,238,0.35);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:0;
+  }
+  .ref-video .play-badge span::before{
+    content:'';
+    border-style:solid;
+    border-width:9px 0 9px 15px;
+    border-color:transparent transparent transparent var(--gold);
+    margin-left:4px;
+  }
+  .ref-video .yt-tag{
+    position:absolute;
+    bottom:6px; right:8px;
+    font-size:9px;
+    letter-spacing:0.05em;
+    color:#e6e4de;
+    background:rgba(10,10,12,0.6);
+    padding:2px 6px;
+    border-radius:4px;
+  }
+  .ref-video.generic{
+    background:linear-gradient(140deg, var(--card-grad-1), var(--card-grad-2));
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .ref-video.generic .play-badge{ position:static; }
+  .ref-caption{
+    font-size:10.5px;
+    color:#6b6963;
+    margin-top:5px;
+  }
+
+  /* ===== Friends / Account / Challenge ===== */
+  .auth-card{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    background:linear-gradient(160deg, var(--card-grad-1), var(--card-grad-2));
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 24px;
+  }
+  .auth-tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom:16px;
+    background:var(--panel-tint);
+    border-radius:10px;
+    padding:4px;
+  }
+  .auth-tab-btn{
+    flex:1;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:12.5px;
+    padding:8px;
+    border-radius:7px;
+    border:none;
+    background:transparent;
+    color:var(--sub-text);
+    cursor:pointer;
+  }
+  .auth-tab-btn.active{ background:var(--azure); color:#08131c; }
+  .field-row{ display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+  .field-row label{ font-size:11px; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-text); }
+  .field-row input{
+    background:var(--black);
+    color:var(--glove);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:14px;
+    width:100%;
+  }
+  .field-row input:focus{ outline:1px solid var(--azure); }
+  .field-hint{ font-size:11px; color:var(--muted-text); margin-top:4px; line-height:1.5; }
+  .field-error{ font-size:11.5px; color:#e6899a; margin-top:6px; min-height:14px; }
+  .name-taken-box{
+    background:rgba(232,185,63,0.08);
+    border:1px solid rgba(232,185,63,0.3);
+    border-radius:10px;
+    padding:10px 12px;
+    font-size:12px;
+    color:var(--gold);
+    margin-bottom:12px;
+    line-height:1.5;
+  }
+
+  .profile-card{
+    width:100%;
+    max-width:420px;
+    margin:0 auto 16px;
+    background:linear-gradient(160deg, var(--card-grad-1), var(--card-grad-2));
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .profile-name{ font-family:'Bebas Neue', sans-serif; font-size:26px; letter-spacing:0.03em; }
+  .profile-code{ font-size:12px; color:var(--azure); letter-spacing:0.03em; }
+
+  .add-friend-row{
+    width:100%;
+    max-width:420px;
+    margin:0 auto 16px;
+    display:flex;
+    gap:8px;
+  }
+  .add-friend-row input{
+    flex:1;
+    background:var(--black);
+    color:var(--glove);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:13px;
+  }
+
+  .friend-list{
+    width:100%;
+    max-width:420px;
+    margin:0 auto;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .friend-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:var(--panel-tint);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px 14px;
+  }
+  .friend-info{ display:flex; align-items:center; gap:10px; }
+  .friend-status-dot{ width:9px; height:9px; border-radius:50%; background:#555; flex-shrink:0; }
+  .friend-status-dot.online{ background:#4caf6a; box-shadow:0 0 8px #4caf6a; }
+  .friend-name{ font-size:13.5px; }
+  .friend-code{ font-size:10.5px; color:var(--muted-text); }
+  .friend-actions{ display:flex; gap:6px; }
+  .friend-actions button{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:11px;
+    padding:6px 10px;
+    letter-spacing:0.02em;
+  }
+  .btn-challenge{ background:var(--azure); color:#08131c; }
+  .btn-challenge:disabled{ opacity:0.35; cursor:not-allowed; }
+  .btn-remove{ background:transparent; border:1px solid var(--line); color:var(--faint-text); }
+
+  .challenge-banner{
+    width:100%;
+    max-width:420px;
+    margin:0 auto 16px;
+    background:linear-gradient(90deg, rgba(74,155,232,0.18), rgba(155,107,217,0.12));
+    border:1px solid var(--azure);
+    border-radius:14px;
+    padding:16px 18px;
+    text-align:center;
+  }
+  .challenge-banner .cb-title{ font-family:'Bebas Neue', sans-serif; font-size:20px; color:var(--azure); margin-bottom:6px; }
+  .challenge-banner p{ font-size:12.5px; color:var(--sub-text); margin:0 0 12px; }
+  .challenge-banner .cb-actions{ display:flex; gap:8px; justify-content:center; }
+
+  .vs-row{ display:flex; align-items:center; justify-content:center; gap:16px; margin:14px 0; }
+  .vs-player{ text-align:center; flex:1; }
+  .vs-player .vs-name{ font-size:13px; color:var(--sub-text); margin-bottom:4px; }
+  .vs-player .vs-score{ font-family:'Bebas Neue', sans-serif; font-size:42px; color:var(--gold); }
+  .vs-divider{ font-family:'Bebas Neue', sans-serif; font-size:20px; color:var(--faint-text); }
+</style>
+</head>
+<body>
+
+<div class="app-container" id="appContainer">
+
+<div class="header-block">
+<div class="mj-icon-row">
+  <svg viewBox="0 0 24 24" class="mj-glove"><path d="M8 2c-.6 0-1 .4-1 1v6.2L5.8 7.5c-.4-.5-1.2-.5-1.6 0-.4.5-.4 1.2.1 1.6L7 11.8V13c0 3.9 3.1 7 7 7h1c2.8 0 5-2.2 5-5v-4c0-.8-.7-1.5-1.5-1.5S17 10.2 17 11v2h-1V9c0-.8-.7-1.5-1.5-1.5S13 8.2 13 9v4h-1V5c0-.8-.7-1.5-1.5-1.5S9 4.2 9 5v8H8V3c0-.6-.4-1-1-1z"/></svg>
+  <svg viewBox="0 0 24 24"><path class="mj-fedora" d="M3 15c0-1 4-2 9-2s9 1 9 2-4 2-9 2-9-1-9-2z"/><path class="mj-fedora" d="M7 15c0-3 2-8 5-8s5 5 5 8"/><rect class="mj-sparkle" x="9" y="12" width="6" height="1.4" rx="0.7"/></svg>
+  <svg viewBox="0 0 24 24" class="mj-glove" style="transform:scaleX(-1);"><path d="M8 2c-.6 0-1 .4-1 1v6.2L5.8 7.5c-.4-.5-1.2-.5-1.6 0-.4.5-.4 1.2.1 1.6L7 11.8V13c0 3.9 3.1 7 7 7h1c2.8 0 5-2.2 5-5v-4c0-.8-.7-1.5-1.5-1.5S17 10.2 17 11v2h-1V9c0-.8-.7-1.5-1.5-1.5S13 8.2 13 9v4h-1V5c0-.8-.7-1.5-1.5-1.5S9 4.2 9 5v8H8V3c0-.6-.4-1-1-1z"/></svg>
+</div>
+<div class="eyebrow">Motion Stage · 01</div>
+<h1>MICHAEL JACKSON MIRROR</h1>
+<div class="sub">Pick a signature move, hit record, and get scored on rhythm, smoothness and stage presence.</div>
+<div class="badge" id="streakBadge" style="margin:10px auto 0; color:var(--orange); border-color:var(--orange); width:fit-content;">🔥 0 day streak</div>
+<div style="display:flex; gap:6px; justify-content:center; margin-top:8px; flex-wrap:wrap;">
+<button class="badge" id="soundToggle" style="width:fit-content; cursor:pointer; border:1px solid var(--line); background:var(--panel-tint); color:#000000; font-family:'Space Grotesk',sans-serif;">🔊 Sound On</button>
+<button class="badge" id="musicToggle" style="width:fit-content; cursor:pointer; border:1px solid var(--line); background:var(--panel-tint); color:#000000; font-family:'Space Grotesk',sans-serif;">🎵 Music Off</button>
+</div>
+</div>
+
+<div class="mode-switch" id="modeSwitch">
+  <button class="mode-btn active" data-mode="phone">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    Phone
+  </button>
+  <button class="mode-btn" data-mode="ipad">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    iPad
+  </button>
+  <button class="mode-btn" data-mode="desktop">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="1"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/></svg>
+    Computer
+  </button>
+</div>
+
+<div class="top-tabs">
+  <button class="top-tab active" id="tabStage">Stage</button>
+  <button class="top-tab" id="tabCombo">Combo</button>
+  <button class="top-tab" id="tabVoice">Voice Match</button>
+  <button class="top-tab" id="tabFriends">Friends</button>
+  <button class="top-tab" id="tabTutorial">How To Play</button>
+  <button class="top-tab" id="tabSuggest">Suggestions</button>
+</div>
+
+<div class="panel" id="stagePanel">
+<div class="stage-layout">
+<div class="stage-col">
+
+<div id="stageWrapHome"></div>
+<div class="stage-wrap" id="stageWrap">
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="overlay"></canvas>
+  <div class="spotlight"></div>
+  <div class="floor-line"></div>
+
+  <div class="hud">
+    <div class="badge"><span class="dot" id="camDot"></span><span id="camLabel">Camera off</span></div>
+    <div style="display:flex; gap:6px;">
+      <div class="badge" id="bestBadge" style="display:none; color:var(--gold); border-color:var(--gold);">Best: —</div>
+      <div class="badge" id="moveBadge">Moonwalk</div>
+    </div>
+  </div>
+
+  <div class="idle-overlay" id="idleOverlay">
+    <p>Turn on your camera, choose your move, and step into the spotlight.</p>
+    <button class="btn-primary" id="startCamBtn">Step On Stage</button>
+    <button class="btn-ghost" id="noCameraBtn" style="pointer-events:auto;">No Camera? Self-Judge Instead</button>
+    <div id="idleExtra"></div>
+  </div>
+
+  <div class="countdown" id="countdown" style="display:none;"></div>
+  <div class="timer-fill" id="timerFill" style="width:0%;"></div>
+
+  <div id="replayOverlay" style="display:none; position:absolute; inset:0; z-index:6; background:rgba(10,10,12,0.85);">
+    <canvas id="replayCanvas" style="position:absolute; inset:0; width:100%; height:100%;"></canvas>
+    <div style="position:absolute; top:12px; left:12px; right:12px; display:flex; justify-content:space-between; z-index:7;">
+      <div class="badge" style="color:var(--violet); border-color:var(--violet);">🐢 Slow-Mo Replay</div>
+      <button class="btn-ghost" id="replayCloseBtn" style="padding:6px 12px; font-size:12px;">Close</button>
+    </div>
+    <div style="position:absolute; bottom:12px; left:12px; right:12px; z-index:7;">
+      <div style="height:4px; background:var(--track-bg); border-radius:2px; overflow:hidden; margin-bottom:8px;">
+        <div id="replayProgress" style="height:100%; width:0%; background:var(--violet);"></div>
+      </div>
+      <div style="display:flex; gap:6px; justify-content:center;">
+        <button class="btn-ghost" id="replaySpeedBtn" style="padding:6px 14px; font-size:12px;">Speed: 0.25x</button>
+        <button class="btn-ghost" id="replayReplayBtn" style="padding:6px 14px; font-size:12px;">↻ Replay</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <select id="moveSelect">
+    <option value="moonwalk">Moonwalk</option>
+    <option value="spin">The Spin</option>
+    <option value="lean">Anti-Gravity Lean</option>
+    <option value="pointfreeze">Point &amp; Freeze</option>
+    <option value="toestand">Toe Stand</option>
+    <option value="kick">The Kick</option>
+    <option value="robot">The Robot</option>
+    <option value="headsnap">Head Snap</option>
+    <option value="sideglide">Side Glide</option>
+    <option value="crotchgrab">Crotch Grab</option>
+    <option value="unisonhit">Group Unison Hit</option>
+    <option value="hattip">Hat Tip</option>
+    <option value="jacketmove">Jacket Move</option>
+    <option value="kneedrop">Knee Drop</option>
+    <option value="footstomp">Foot Stomp</option>
+    <option value="circleglide">Circle Glide</option>
+    <option value="jacksonshuffle">Jackson Shuffle</option>
+    <option value="fedoratilt">Fedora Tilt</option>
+    <option value="sidewalk">Side Walk</option>
+  </select>
+  <button class="btn-primary" id="recordBtn" disabled>Record 5s Take</button>
+  <button class="btn-ghost" id="resetBtn">Reset</button>
+</div>
+
+</div><!-- /stage-col -->
+<div class="side-col">
+
+<div class="score-panel" id="selfJudgePanel">
+  <div class="move-name">SELF-JUDGE MODE</div>
+  <div style="font-size:13px; color:var(--sub-text); margin-bottom:16px; line-height:1.5;">
+    No camera needed. Perform <strong id="sjMoveLabel" style="color:var(--glove);">the Moonwalk</strong> once (mirror optional), then rate yourself honestly on each point below.
+  </div>
+  <div class="metric-bars" id="sjSliders"></div>
+  <button class="btn-primary" id="sjSubmitBtn" style="width:100%; margin-top:6px;">Get My Score</button>
+</div>
+
+<div class="score-panel" id="scorePanel">
+  <div class="new-best-banner" id="newBestBanner">★ New personal best for this move!</div>
+  <div class="move-name" id="scoreMoveName">MOONWALK</div>
+  <div class="score-row">
+    <div class="score-number" id="scoreNumber">0</div>
+    <div class="score-outof">/ 10</div>
+  </div>
+  <div class="metric-bars" id="metricBars"></div>
+  <div class="tips">
+    <h3>Coach's Notes</h3>
+    <ul id="tipsList"></ul>
+  </div>
+  <button class="btn-ghost" id="shareBtn" style="width:100%; margin-top:14px;">Share This Result</button>
+  <button class="btn-ghost" id="replayBtn" style="width:100%; margin-top:8px; display:none;">Watch Slow-Mo Replay</button>
+</div>
+
+<div class="history" id="history"></div>
+
+<div class="foot-note">
+  Scoring reads your movement's speed, smoothness and stability from the webcam feed via on-device pose tracking — it's a motion coach, not a certified Michael Jackson judge. Nothing is recorded or uploaded; all tracking runs locally in your browser.
+</div>
+
+</div><!-- /side-col -->
+</div><!-- /stage-layout -->
+
+</div><!-- /stagePanel -->
+
+<div class="panel hidden" id="tutorialPanel">
+  <div class="tutorial-panel">
+
+    <div class="tutorial-section">
+      <h2>How To Play</h2>
+      <ol class="step-list">
+        <li>Tap <strong>Step On Stage</strong> and allow camera access when your browser asks.</li>
+        <li>Pick a move from the dropdown — each one is scored on different things, so check the guide below before you go for a high score.</li>
+        <li>Tap <strong>Record 5s Take</strong>. You'll get a 3-2-1 countdown, then 5 seconds to perform.</li>
+        <li>Stay fully in frame — the gold skeleton overlay shows what the camera can see. If a limb disappears, step back.</li>
+        <li>Your score, a metric breakdown, and coaching tips appear right after your take.</li>
+        <li>Tap <strong>Record 5s Take</strong> again to retry the same move, or pick a new one. Your recent scores are tracked at the bottom of the Stage tab.</li>
+      </ol>
+    </div>
+
+    <div class="tutorial-section">
+      <h2>Move Guide</h2>
+      <div class="move-guide">
+        <div class="move-card">
+          <h3>Moonwalk <span class="diff mid">Medium</span></h3>
+          <p>Glide backward while your feet look like they're sliding forward. Keep your torso still and upright, push off the ball of your back foot, and keep knees soft. Scored on glide, smoothness, control and energy.</p>
+          <a class="ref-video" href="https://www.youtube.com/shorts/kuoBTcnn1o4" target="_blank" rel="noopener">
+            <img src="https://img.youtube.com/vi/kuoBTcnn1o4/hqdefault.jpg" alt="Moonwalk reference video thumbnail" loading="lazy">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Watch on YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: Michael Jackson performing the Moonwalk.</div>
+        </div>
+        <div class="move-card">
+          <h3>The Spin <span class="diff mid">Medium</span></h3>
+          <p>A fast whip turn that finishes balanced. Spot a fixed point with your eyes, snap your head around first, and land on the balls of your feet with soft knees. Scored on energy, smoothness, balance and finish.</p>
+          <a class="ref-video" href="https://youtu.be/m4wus5ZEFeY" target="_blank" rel="noopener">
+            <img src="https://img.youtube.com/vi/m4wus5ZEFeY/hqdefault.jpg" alt="The Spin reference video thumbnail" loading="lazy">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Watch on YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: Michael Jackson performing The Spin.</div>
+        </div>
+        <div class="move-card">
+          <h3>Anti-Gravity Lean <span class="diff hard">Hard</span></h3>
+          <p>Lean forward past what looks physically possible, then hold it. Keep a straight line from ankles to head — the lean comes from the ankles, not the waist. Scored on hold, control, commitment and smoothness. Don't actually try the full 45° angle without the special shoes — Jackson used a patented harness rig for the real thing.</p>
+          <a class="ref-video" href="https://www.youtube.com/shorts/LfS8rXM2JU8" target="_blank" rel="noopener">
+            <img src="https://img.youtube.com/vi/LfS8rXM2JU8/hqdefault.jpg" alt="Anti-Gravity Lean reference video thumbnail" loading="lazy">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Watch on YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: Michael Jackson's Anti-Gravity Lean.</div>
+        </div>
+        <div class="move-card">
+          <h3>Point &amp; Freeze <span class="diff easy">Easy</span></h3>
+          <p>Snap into a pointing pose, fully extended, and hold dead still. Commit fast, then don't move a muscle. Scored on snap speed, freeze stillness, extension and control.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+freeze+pose+live+performance" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: MJ's signature freeze poses across performances.</div>
+        </div>
+        <div class="move-card">
+          <h3>Toe Stand <span class="diff hard">Hard</span></h3>
+          <p>Rise slowly onto your toes and hold your balance at the top. Keep ankles stacked under your hips and brace your core. Scored on balance, hold, control and energy.</p>
+          <a class="ref-video" href="https://www.youtube.com/shorts/dkrX0v4XUQg" target="_blank" rel="noopener">
+            <img src="https://img.youtube.com/vi/dkrX0v4XUQg/hqdefault.jpg" alt="Toe Stand reference video thumbnail" loading="lazy">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Watch on YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: Michael Jackson's Toe Stand.</div>
+        </div>
+        <div class="move-card">
+          <h3>The Kick <span class="diff easy">Easy</span></h3>
+          <p>A sharp, high kick with a clean snap-back to standing. Drive the kick up fast, keep your standing leg stable, and stick the landing rather than wobbling. Scored on snap, height, landing control and balance.</p>
+          <a class="ref-video" href="https://www.youtube.com/shorts/8GmXIF_amEg" target="_blank" rel="noopener">
+            <img src="https://img.youtube.com/vi/8GmXIF_amEg/hqdefault.jpg" alt="The Kick reference video thumbnail" loading="lazy">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Watch on YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: Michael Jackson's Kick.</div>
+        </div>
+        <div class="move-card">
+          <h3>The Robot <span class="diff mid">Medium</span></h3>
+          <p>Mechanical, segmented movement — each joint moves and stops on its own, no fluid blending between them. Isolate one joint at a time and hit hard stops. Scored on isolation, sharpness, hold-per-beat and control.</p>
+          <a class="ref-video" href="https://www.youtube.com/shorts/pCwE9qL1Htc" target="_blank" rel="noopener">
+            <img src="https://img.youtube.com/vi/pCwE9qL1Htc/hqdefault.jpg" alt="The Robot reference video thumbnail" loading="lazy">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Watch on YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: Michael Jackson's Robot.</div>
+        </div>
+        <div class="move-card">
+          <h3>Head Snap <span class="diff easy">Easy</span></h3>
+          <p>Whip your head sharply to one side or angle on the beat, then stop it dead — no drift. Keep your shoulders still so it reads as an isolated head movement, not a whole-body flinch. Scored on snap sharpness, precision of the stop, isolation and timing.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+head+snap+live+performance" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: sharp head isolations across MJ's performances.</div>
+        </div>
+        <div class="move-card">
+          <h3>Side Glide <span class="diff mid">Medium</span></h3>
+          <p>Step sideways smoothly, feet low to the ground with no vertical bounce, crossing one foot behind or in front of the other in a continuous line. Keep your upper body level and relaxed. Scored on glide, smoothness, consistency and energy.</p>
+          <a class="ref-video" href="https://www.youtube.com/shorts/m6CR7cV44iU" target="_blank" rel="noopener">
+            <img src="https://img.youtube.com/vi/m6CR7cV44iU/hqdefault.jpg" alt="Side Glide reference video thumbnail" loading="lazy">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Watch on YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: Michael Jackson's Side Glide.</div>
+        </div>
+        <div class="move-card">
+          <h3>Crotch Grab <span class="diff easy">Easy</span></h3>
+          <p>A sharp, punctuated accent move — snap into it on the beat, hold it briefly, then release. Keep the rest of your body still around the accent so it reads as a clean, confident hit rather than a wiggle. Scored on snap, hold, control and confidence.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+signature+moves+live+performance" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: one of MJ's most recognizable signature accents.</div>
+        </div>
+        <div class="move-card">
+          <h3>Group Unison Hit <span class="diff mid">Medium</span></h3>
+          <p>A single big, sharp movement landed on one beat, then a hard freeze right after — the kind of hit a whole group of dancers lands together in sync. Commit your entire body to one clean, powerful motion rather than several small ones. Scored on hit power, freeze stillness, clarity and timing.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+beat+it+dance+scene" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: the synchronized group choreography hit from "Beat It."</div>
+        </div>
+        <div class="move-card">
+          <h3>Hat Tip <span class="diff easy">Easy</span></h3>
+          <p>A smooth reach up followed by a sharp, confident flick of the brim. Keep your posture upright and add a brief held beat right after the tip so the accent lands cleanly rather than trailing off. Scored on reach, flick sharpness, hold and style.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+hat+tip+signature+move" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: one of MJ's classic hat-tip flourishes.</div>
+        </div>
+        <div class="move-card">
+          <h3>Jacket Move <span class="diff easy">Easy</span></h3>
+          <p>A sharp, shoulder-driven pop or tug of the jacket — a quick, punchy accent rather than a slow adjustment. Keep the rest of your body still so the motion reads clearly, and finish in a confident held pose. Scored on pop sharpness, punch, finish and control.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+jacket+move+performance" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: MJ's signature jacket-accent styling.</div>
+        </div>
+        <div class="move-card">
+          <h3>Knee Drop <span class="diff mid">Medium</span></h3>
+          <p>A controlled drop down onto one or both knees, then a hold before rising back up. Keep your back straight and core braced through the descent rather than collapsing. Scored on control, descent, hold and recovery.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+knee+drop+dance" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: a signature MJ knee drop moment.</div>
+        </div>
+        <div class="move-card">
+          <h3>Foot Stomp <span class="diff easy">Easy</span></h3>
+          <p>A sharp, decisive stomp of one foot down on the beat. Keep your upper body steady so the accent reads clearly, and stay balanced on the standing leg. Scored on impact, balance, sharpness and recovery.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+foot+stomp+dance" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: MJ's percussive foot-stomp accents.</div>
+        </div>
+        <div class="move-card">
+          <h3>Circle Glide <span class="diff mid">Medium</span></h3>
+          <p>A smooth, continuous glide tracing a circular path with your feet, low to the ground with no straight-line stepping. Keep the pace even throughout. Scored on glide, smoothness, consistency and energy.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+circle+glide+footwork" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: MJ's circular gliding footwork.</div>
+        </div>
+        <div class="move-card">
+          <h3>Jackson Shuffle <span class="diff hard">Hard</span></h3>
+          <p>Quick, light, compact footwork — small fast steps rather than big movements, staying loose and bouncy on your feet. Scored on footwork speed, rhythm, lightness and control.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+quick+footwork+shuffle" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: MJ's rapid, light footwork sequences.</div>
+        </div>
+        <div class="move-card">
+          <h3>Fedora Tilt <span class="diff easy">Easy</span></h3>
+          <p>A slower, more deliberate tilt of the hat brim than the quick Hat Tip — reach up, tilt with control, and hold the pose for a beat before releasing. Scored on reach, tilt control, hold and style.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+fedora+hat+tilt" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: MJ's classic fedora styling.</div>
+        </div>
+        <div class="move-card">
+          <h3>Side Walk <span class="diff easy">Easy</span></h3>
+          <p>Deliberate sideways steps with a clear walking rhythm — steadier and more grounded than the Side Glide. Keep each step even and on-beat, with a relaxed upper body. Scored on rhythm, step clarity, balance and style.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+side+walk+dance" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: MJ's grounded side-step walking rhythm.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tutorial-section">
+      <h2>Camera Not Working?</h2>
+      <p style="font-size:12.5px; color:var(--sub-text); line-height:1.6; margin:0;">
+        If you see a "camera blocked" or NotAllowedError message, it's usually because the page is running inside an embedded preview frame (like Claude's artifact viewer or a third-party code editor), and some mobile browsers block camera access inside embedded frames entirely — no permission prompt even appears. Try opening this artifact's file directly in its own browser tab instead of the embedded preview, and make sure camera access is allowed in your browser's site settings.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<div class="panel hidden" id="comboPanel">
+  <div class="tutorial-panel" style="text-align:center;">
+    <div class="move-name" style="color:var(--violet);">COMBO MODE</div>
+    <p style="font-size:12.5px; color:var(--sub-text); line-height:1.6; max-width:440px; margin:0 auto 18px;">
+      Pick how many moves to chain and perform them back-to-back in one take. This uses the same camera as the Stage tab — start your camera there first if you haven't already. Each move gets its own timing window, and you get a combined routine score at the end.
+    </p>
+
+    <div style="display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:16px;">
+      <button class="btn-ghost" id="comboCountMinus" style="width:40px; height:40px; padding:0; font-size:20px; line-height:1; border-radius:50%;">−</button>
+      <div style="min-width:110px;">
+        <input type="number" id="comboCountInput" value="3" style="font-family:'Bebas Neue', sans-serif; font-size:32px; color:var(--violet); line-height:1; background:transparent; border:none; text-align:center; width:100%; -moz-appearance:textfield;">
+        <div style="font-size:11px; color:var(--muted-text); letter-spacing:0.04em; text-transform:uppercase;">moves</div>
+      </div>
+      <button class="btn-ghost" id="comboCountPlus" style="width:40px; height:40px; padding:0; font-size:20px; line-height:1; border-radius:50%;">+</button>
+    </div>
+
+    <div id="comboSelectList" style="display:flex; flex-direction:column; gap:10px; max-width:360px; margin:0 auto 16px;"></div>
+
+    <div id="comboStageSlot" style="max-width:420px; margin:0 auto 16px;"></div>
+
+    <div id="comboCamNotice" style="font-size:12px; color:var(--orange); margin-bottom:12px; display:none;">
+      Camera isn't on yet — go to the Stage tab and tap "Step On Stage" first.
+    </div>
+
+    <div class="badge" id="comboStepBadge" style="display:inline-flex; margin-bottom:12px;">Ready</div>
+
+    <div class="controls" style="max-width:360px; margin:0 auto;">
+      <button class="btn-primary" id="comboRecordBtn" style="background:linear-gradient(180deg, var(--violet), #6b4a9e);">Start Combo</button>
+      <button class="btn-ghost" id="comboResetBtn">Reset</button>
+    </div>
+
+    <div class="score-panel" id="comboScorePanel" style="text-align:left; max-width:420px; margin:20px auto 0;">
+      <div class="move-name">COMBO RESULT</div>
+      <div class="score-row">
+        <div class="score-number" id="comboScoreNumber">0</div>
+        <div class="score-outof">/ 10</div>
+      </div>
+      <div id="comboBreakdown" style="display:flex; flex-direction:column; gap:8px; margin:14px 0;"></div>
+      <button class="btn-ghost" id="comboShareBtn" style="width:100%; margin-top:6px;">Share This Result</button>
+    </div>
+  </div>
+</div>
+
+<div class="panel hidden" id="suggestPanel">
+  <div class="tutorial-panel" style="text-align:center;">
+    <div class="move-name" style="color:var(--teal);">SUGGESTION BOX</div>
+    <p style="font-size:12.5px; color:var(--sub-text); line-height:1.6; max-width:440px; margin:0 auto 18px;">
+      Got an idea for a new move, a feature, or something that feels off? Drop it below. Suggestions are saved right here in your browser — nothing is sent anywhere.
+    </p>
+
+    <div style="max-width:420px; margin:0 auto;">
+      <textarea id="suggestInput" placeholder="e.g. Add a spin-into-freeze combo move, or a difficulty setting for scoring..." style="width:100%; min-height:100px; padding:12px 14px; border-radius:10px; border:1px solid var(--line); background:var(--panel-tint); color:var(--glove); font-family:'Space Grotesk', sans-serif; font-size:14px; resize:vertical;"></textarea>
+      <button class="btn-primary" id="suggestSubmitBtn" style="width:100%; margin-top:10px;">Submit Suggestion</button>
+    </div>
+
+    <div id="suggestList" style="max-width:420px; margin:24px auto 0; text-align:left; display:flex; flex-direction:column; gap:10px;"></div>
+
+    <div id="suggestEmptyState" style="font-size:12.5px; color:var(--faint-text); margin-top:20px;">No suggestions yet — be the first to add one.</div>
+  </div>
+</div>
+
+<div class="panel hidden" id="voicePanel">
+  <div class="tutorial-panel" style="text-align:center;">
+    <div class="move-name" style="color:var(--gold);">VOICE MATCH</div>
+    <p style="font-size:12.5px; color:var(--sub-text); line-height:1.6; max-width:440px; margin:0 auto 18px;">
+      This compares your vocal <strong style="color:var(--glove);">range and style</strong> — how high you can go, how wide your range is, and whether you land signature MJ-style vocal punctuation — against his well-documented range. It can't play or compare against his actual recordings, and it isn't a voice-cloning or "sounds identical" tool.
+    </p>
+
+    <div class="stage-wrap" id="voiceStageWrap" style="max-width:420px; aspect-ratio:1/1; margin:0 auto;">
+      <div class="spotlight"></div>
+      <div class="idle-overlay" id="voiceIdleOverlay">
+        <p>Turn on your mic and sing or hum through a wide range — low to your highest falsetto.</p>
+        <button class="btn-primary" id="startMicBtn">Start Listening</button>
+        <div id="micIdleExtra"></div>
+      </div>
+      <div id="voiceLiveView" style="display:none; position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:3;">
+        <div style="font-family:'Bebas Neue', sans-serif; font-size:15px; letter-spacing:0.08em; color:var(--gold); margin-bottom:6px;">CURRENT NOTE</div>
+        <div id="voiceNoteDisplay" style="font-family:'Bebas Neue', sans-serif; font-size:64px; color:var(--glove); line-height:1;">—</div>
+        <div id="voiceHzDisplay" style="font-size:12px; color:var(--muted-text); margin-top:2px;">— Hz</div>
+        <div style="width:80%; margin-top:18px;">
+          <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--muted-text); margin-bottom:4px;">
+            <span>Low</span><span>Your Range So Far</span><span>High</span>
+          </div>
+          <div style="height:8px; background:var(--track-bg); border-radius:4px; position:relative; overflow:hidden;">
+            <div id="voiceRangeBar" style="position:absolute; height:100%; background:linear-gradient(90deg, var(--crimson), var(--gold)); border-radius:4px; left:50%; width:0%;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="timer-fill" id="voiceTimerFill" style="width:0%;"></div>
+    </div>
+
+    <div class="controls" style="max-width:420px; margin:16px auto 0;">
+      <button class="btn-primary" id="voiceRecordBtn" disabled>Record 8s Sample</button>
+      <button class="btn-ghost" id="voiceResetBtn">Reset</button>
+    </div>
+
+    <div class="score-panel" id="voiceScorePanel" style="text-align:left; max-width:420px; margin:20px auto 0;">
+      <div class="move-name">VOICE MATCH RESULT</div>
+      <div class="score-row">
+        <div class="score-number" id="voiceScoreNumber">0</div>
+        <div class="score-outof">/ 10</div>
+      </div>
+      <div class="metric-bars" id="voiceMetricBars"></div>
+      <div class="tips">
+        <h3>Vocal Notes</h3>
+        <ul id="voiceTipsList"></ul>
+      </div>
+      <button class="btn-ghost" id="voiceShareBtn" style="width:100%; margin-top:14px;">Share This Result</button>
+    </div>
+
+    <div class="tutorial-section" style="text-align:left; margin-top:22px;">
+      <h2>About This Comparison</h2>
+      <p style="font-size:12.5px; color:var(--sub-text); line-height:1.6; margin:0;">
+        Michael Jackson was widely noted for an unusually wide vocal range spanning into a high tenor and falsetto register — commonly cited around F#5 to C6 in his upper falsetto — plus his use of sharp inhales, "hee-hee" and "ow!" style ad-libs, and rhythmic vocal punctuation as percussive elements. This mode checks how wide your own range is, how high your falsetto reaches, and rewards you for adding sharp, punchy vocal accents rather than singing in a flat, unbroken tone. It's a range-and-style comparison, not a claim about how you actually sound.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="panel hidden" id="friendsPanel">
+  <div id="authArea">
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab-btn active" id="authTabLogin">Log In</button>
+        <button class="auth-tab-btn" id="authTabSignup">Sign Up</button>
+      </div>
+
+      <div id="loginForm">
+        <div class="field-row">
+          <label>First Name</label>
+          <input type="text" id="loginFirstName" autocomplete="given-name">
+        </div>
+        <div class="field-row">
+          <label>Last Name</label>
+          <input type="text" id="loginLastName" autocomplete="family-name">
+        </div>
+        <div class="field-row">
+          <label>Tag # (if you have one)</label>
+          <input type="text" id="loginTag" placeholder="e.g. 4821" inputmode="numeric" maxlength="4">
+        </div>
+        <div class="field-row">
+          <label>Password</label>
+          <input type="password" id="loginPassword" autocomplete="current-password">
+        </div>
+        <div class="field-error" id="loginError"></div>
+        <button class="btn-primary" id="loginSubmitBtn" style="width:100%;">Log In</button>
+      </div>
+
+      <div id="signupForm" style="display:none;">
+        <div class="field-row">
+          <label>First Name</label>
+          <input type="text" id="signupFirstName" autocomplete="given-name">
+        </div>
+        <div class="field-row">
+          <label>Last Name</label>
+          <input type="text" id="signupLastName" autocomplete="family-name">
+        </div>
+        <div id="signupTakenBox" class="name-taken-box" style="display:none;"></div>
+        <div class="field-row" id="signupTagRow" style="display:none;">
+          <label>Pick a Tag # to tell you apart (1000–9999)</label>
+          <input type="text" id="signupTag" placeholder="e.g. 4821" inputmode="numeric" maxlength="4">
+        </div>
+        <div class="field-row">
+          <label>Password</label>
+          <input type="password" id="signupPassword" autocomplete="new-password">
+        </div>
+        <div class="field-hint">Your friend code will be your Last Name + this tag, e.g. <strong>Jackson#4821</strong> — that's what friends use to add you.</div>
+        <div class="field-error" id="signupError"></div>
+        <button class="btn-primary" id="signupSubmitBtn" style="width:100%; margin-top:6px;">Create Account</button>
+      </div>
+
+      <div class="field-hint" style="margin-top:14px; text-align:center;">
+        Accounts, friends and online status are stored in Firebase so they work across devices — see the setup note in the code if this is your first time running the app.
+      </div>
+    </div>
+  </div>
+
+  <div id="friendsArea" style="display:none; width:100%;">
+    <div class="profile-card">
+      <div>
+        <div class="profile-name" id="myProfileName">—</div>
+        <div class="profile-code" id="myProfileCode">—#0000</div>
+      </div>
+      <button class="btn-ghost" id="logoutBtn" style="font-size:13px; padding:8px 16px;">Log Out</button>
+    </div>
+
+    <div id="incomingChallengeArea"></div>
+    <div id="activeChallengeArea"></div>
+
+    <div class="add-friend-row">
+      <input type="text" id="addFriendInput" placeholder="Add friend — Lastname#1234">
+      <button class="btn-primary" id="addFriendBtn" style="padding:10px 18px; font-size:14px;">Add</button>
+    </div>
+    <div class="field-error" id="addFriendError" style="max-width:420px; margin:-8px auto 12px; text-align:center;"></div>
+
+    <div class="friend-list" id="friendList"></div>
+    <div class="field-hint" id="friendsEmptyState" style="text-align:center; margin-top:14px;">No friends yet — add one using their friend code above.</div>
+  </div>
+</div>
+
+</div><!-- /app-container -->
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1675466862/camera_utils.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore-compat.js"></script>
+<script>
+(function(){
+  const video = document.getElementById('video');
+  const overlay = document.getElementById('overlay');
+  const ctx = overlay.getContext('2d');
+  const idleOverlay = document.getElementById('idleOverlay');
+  const idleExtra = document.getElementById('idleExtra');
+  const startCamBtn = document.getElementById('startCamBtn');
+  const tabStage = document.getElementById('tabStage');
+  const tabTutorial = document.getElementById('tabTutorial');
+  const stagePanel = document.getElementById('stagePanel');
+  const tutorialPanel = document.getElementById('tutorialPanel');
+  const recordBtn = document.getElementById('recordBtn');
+  const resetBtn = document.getElementById('resetBtn');
+  const moveSelect = document.getElementById('moveSelect');
+  const moveBadge = document.getElementById('moveBadge');
+  const bestBadge = document.getElementById('bestBadge');
+  const newBestBanner = document.getElementById('newBestBanner');
+  const camDot = document.getElementById('camDot');
+  const camLabel = document.getElementById('camLabel');
+  const countdownEl = document.getElementById('countdown');
+  const timerFill = document.getElementById('timerFill');
+  const scorePanel = document.getElementById('scorePanel');
+  const scoreNumber = document.getElementById('scoreNumber');
+  const scoreMoveName = document.getElementById('scoreMoveName');
+  const metricBars = document.getElementById('metricBars');
+  const tipsList = document.getElementById('tipsList');
+  const historyEl = document.getElementById('history');
+  const noCameraBtn = document.getElementById('noCameraBtn');
+  const selfJudgePanel = document.getElementById('selfJudgePanel');
+  const sjMoveLabel = document.getElementById('sjMoveLabel');
+  const sjSliders = document.getElementById('sjSliders');
+  const sjSubmitBtn = document.getElementById('sjSubmitBtn');
+  const shareBtn = document.getElementById('shareBtn');
+  const suggestInput = document.getElementById('suggestInput');
+  const suggestSubmitBtn = document.getElementById('suggestSubmitBtn');
+  const suggestList = document.getElementById('suggestList');
+  const suggestEmptyState = document.getElementById('suggestEmptyState');
+  const soundToggle = document.getElementById('soundToggle');
+  const musicToggle = document.getElementById('musicToggle');
+  const replayBtn = document.getElementById('replayBtn');
+  const replayOverlay = document.getElementById('replayOverlay');
+  const replayCanvas = document.getElementById('replayCanvas');
+  const replayCtx = replayCanvas.getContext('2d');
+  const replayProgress = document.getElementById('replayProgress');
+  const replaySpeedBtn = document.getElementById('replaySpeedBtn');
+  const replayReplayBtn = document.getElementById('replayReplayBtn');
+  const replayCloseBtn = document.getElementById('replayCloseBtn');
+
+  const MOVE_LABELS = {
+    moonwalk: 'Moonwalk',
+    spin: 'The Spin',
+    lean: 'Anti-Gravity Lean',
+    pointfreeze: 'Point & Freeze',
+    toestand: 'Toe Stand',
+    kick: 'The Kick',
+    robot: 'The Robot',
+    headsnap: 'Head Snap',
+    sideglide: 'Side Glide',
+    crotchgrab: 'Crotch Grab',
+    unisonhit: 'Group Unison Hit',
+    hattip: 'Hat Tip',
+    jacketmove: 'Jacket Move',
+    kneedrop: 'Knee Drop',
+    footstomp: 'Foot Stomp',
+    circleglide: 'Circle Glide',
+    jacksonshuffle: 'Jackson Shuffle',
+    fedoratilt: 'Fedora Tilt',
+    sidewalk: 'Side Walk'
+  };
+
+  const MOVE_TIPS = {
+    moonwalk: [
+      "Keep your torso still and let your legs do the sliding — shoulders shouldn't bounce.",
+      "Push off with the ball of your back foot, not your heel, for that gliding look.",
+      "Slow it down slightly — smoothness reads better on camera than speed.",
+      "Keep your knees soft and slightly bent throughout the slide."
+    ],
+    spin: [
+      "Spot a fixed point with your eyes to stay balanced through the turn.",
+      "Snap your head around fast, then let your body catch up — that's the classic whip.",
+      "Land the finish on the balls of your feet, knees soft.",
+      "Keep your arms in tight during the rotation for more control."
+    ],
+    lean: [
+      "The illusion needs straight-line posture — no bending at the hips.",
+      "Lean from the ankles, not the waist, to keep the line clean.",
+      "Hold the extreme point for at least a full second before recovering.",
+      "Keep your core braced through the whole movement."
+    ],
+    pointfreeze: [
+      "Commit fully to the point — extend through the fingertips.",
+      "The freeze needs to be dead still; even small sway drops the score.",
+      "Snap into the pose fast, then don't move a muscle.",
+      "Chin up, chest open — the pose should look confident, not tense."
+    ],
+    toestand: [
+      "Rise slowly onto your toes and hold — control matters more than height.",
+      "Keep your ankles stacked directly under your hips for balance.",
+      "Engage your core to stop yourself wobbling at the top.",
+      "A slight forward lean at the peak sells the effect."
+    ],
+    kick: [
+      "Drive the kick up fast and sharp — a slow kick reads as a stretch, not a hit.",
+      "Keep your standing leg locked and stable so you don't lean or hop.",
+      "Snap the leg back down to a clean landing instead of letting it drop.",
+      "Point your toe through the kick for a sharper line."
+    ],
+    robot: [
+      "Move one joint at a time — elbow, then wrist, then shoulder — never blend them together.",
+      "Add a hard stop at the end of every movement, like a motor cutting power.",
+      "Keep your face neutral — a robot doesn't emote mid-movement.",
+      "Slow, deliberate isolations score higher than fast, fluid ones here."
+    ],
+    headsnap: [
+      "Whip your head to the beat, then stop it dead — no drifting past the target.",
+      "Keep your shoulders still so the snap reads as isolated, not a whole-body flinch.",
+      "Land on a clear, held angle each time rather than blurring between positions.",
+      "Sharp and small beats big and loose — precision is what sells this move."
+    ],
+    sideglide: [
+      "Keep your feet low and gliding sideways — no vertical bounce between steps.",
+      "Cross one foot smoothly behind or in front of the other for a continuous line.",
+      "Keep your upper body level and relaxed while your feet do the work.",
+      "Consistent speed across the glide reads better than a fast-slow-fast rhythm."
+    ],
+    crotchgrab: [
+      "It's a sharp, punctuated accent — snap into it on a beat, don't ease in.",
+      "Keep the rest of your body still around the move so it reads as a clean accent, not a wiggle.",
+      "Pair it with a slight knee bend and a confident chest-up posture.",
+      "Hold the accent for a beat before releasing, rather than snapping straight back out."
+    ],
+    unisonhit: [
+      "The whole move is one sharp, synchronized hit — pick a single beat and commit your whole body to it at once.",
+      "Freeze completely for a beat right after the hit, like a group of dancers landing together.",
+      "Keep the motion big and clean rather than fast and messy — unison reads through clarity, not speed.",
+      "Practice the exact same hit a few times in a row so it looks identical every time, the way a group routine would."
+    ],
+    hattip: [
+      "Reach up smoothly, then tip the brim with a sharp, confident flick right at the beat.",
+      "Add a small pause right after the tip — a held beat sells the move more than rushing through it.",
+      "Keep your posture upright and chin up; the move reads as classy, not casual.",
+      "A slight body angle or half-turn while you tip it adds style without overcomplicating it."
+    ],
+    jacketmove: [
+      "Use a sharp shoulder pop or tug motion to make the jacket movement read clearly on camera.",
+      "Keep the rest of your body relatively still so the accent focuses on the shoulders and arms.",
+      "Snap the motion rather than easing into it — sharp and sudden reads better than slow and smooth here.",
+      "Follow through with a confident finishing pose rather than letting the motion trail off."
+    ],
+    kneedrop: [
+      "Bend both knees and lower down under control — a controlled drop reads better than an uncontrolled collapse.",
+      "Keep your back straight and core engaged through the descent.",
+      "Land softly on one or both knees rather than dropping hard.",
+      "Hold the down position briefly before rising back up for a cleaner finish."
+    ],
+    footstomp: [
+      "Drive one foot down sharply on the beat — a hard, decisive stomp reads better than a soft tap.",
+      "Keep your upper body relatively steady so the stomp reads as an isolated accent.",
+      "Add a slight knee bend on the stomping leg to absorb the impact cleanly.",
+      "Keep your balance on the standing leg so you don't wobble after the stomp."
+    ],
+    circleglide: [
+      "Trace a smooth circular path with your feet, keeping the motion continuous rather than stepping in straight lines.",
+      "Keep your knees soft and feet low to the ground for a gliding, not stepping, feel.",
+      "Keep your upper body relaxed and let your lower body carry the circular motion.",
+      "A consistent, even pace around the circle reads more polished than speeding up and slowing down."
+    ],
+    jacksonshuffle: [
+      "Quick, light footwork with small, fast steps — keep the movement compact rather than big and wide.",
+      "Stay light on your feet, almost bouncing, rather than stepping heavily.",
+      "Keep your upper body loose and let your feet do most of the work.",
+      "Consistent rhythm across the shuffle sells the move more than sheer speed."
+    ],
+    fedoratilt: [
+      "A slower, more deliberate tilt than the hat tip — lean the brim down and to the side with control.",
+      "Add a slight pause once the hat is tilted before releasing, to let the pose register.",
+      "Keep your chin and posture confident throughout the tilt.",
+      "A small shoulder or head angle to match the tilt direction adds style."
+    ],
+    sidewalk: [
+      "Step sideways with clear, deliberate steps — this is a walking rhythm, not a glide.",
+      "Keep your steps even and on-beat rather than rushing through them.",
+      "Keep your upper body relaxed and let your legs carry the rhythm.",
+      "A slight bounce or groove in your step adds style without breaking the walking rhythm."
+    ]
+  };
+
+  let pose = null;
+  let camera = null;
+  let latestLandmarks = null;
+  let cameraOn = false;
+  let recording = false;
+  let recordedFrames = [];
+  let lastReplayFrames = [];
+  let scoreLog = JSON.parse(localStorage.getItem('mj_scores') || '[]');
+  let suggestions = JSON.parse(localStorage.getItem('mj_suggestions') || '[]');
+
+  // ===== Sound Effects =====
+  // All sounds are synthesized on the fly with the Web Audio API (simple
+  // oscillator beeps/chimes) — no audio files, no external audio at all.
+  let soundOn = true;
+  try{ soundOn = localStorage.getItem('mj_sound') !== 'off'; }catch(e){}
+  let sfxCtx = null;
+
+  function getSfxCtx(){
+    if(!sfxCtx){
+      sfxCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if(sfxCtx.state === 'suspended') sfxCtx.resume();
+    return sfxCtx;
+  }
+
+  let sfxLastError = null;
+  function beep({freq=440, duration=0.12, type='sine', delay=0, volume=0.18, glideTo=null}={}){
+    if(!soundOn) return;
+    try{
+      const actx = getSfxCtx();
+      const osc = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, actx.currentTime + delay);
+      if(glideTo){
+        osc.frequency.linearRampToValueAtTime(glideTo, actx.currentTime + delay + duration);
+      }
+      gain.gain.setValueAtTime(0, actx.currentTime + delay);
+      gain.gain.linearRampToValueAtTime(volume, actx.currentTime + delay + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + delay + duration);
+      osc.connect(gain);
+      gain.connect(actx.destination);
+      osc.start(actx.currentTime + delay);
+      osc.stop(actx.currentTime + delay + duration + 0.02);
+    }catch(e){
+      sfxLastError = e;
+      console.error('SFX error:', e);
+    }
+  }
+
+  const SFX = {
+    tick: () => beep({freq:420, duration:0.08, type:'square', volume:0.12}),
+    go: () => beep({freq:660, duration:0.22, type:'sine', volume:0.2, glideTo:880}),
+    scoreLow: () => beep({freq:220, duration:0.3, type:'sine', volume:0.15}),
+    scoreMid: () => {
+      beep({freq:440, duration:0.14, volume:0.16});
+      beep({freq:554, duration:0.18, volume:0.16, delay:0.12});
+    },
+    scoreHigh: () => {
+      beep({freq:523, duration:0.12, volume:0.18});
+      beep({freq:659, duration:0.12, volume:0.18, delay:0.1});
+      beep({freq:784, duration:0.22, volume:0.2, delay:0.2});
+    },
+    newBest: () => {
+      [523, 659, 784, 1047].forEach((f,i)=>{
+        beep({freq:f, duration:0.16, type:'triangle', volume:0.22, delay:i*0.09});
+      });
+    },
+    click: () => beep({freq:300, duration:0.05, type:'square', volume:0.08})
+  };
+
+  function playScoreSfx(score){
+    if(score >= 7.5) SFX.scoreHigh();
+    else if(score >= 5) SFX.scoreMid();
+    else SFX.scoreLow();
+  }
+
+  // ===== Background Music =====
+  // A small original beat sequencer: synthesized kick/hihat/bass pattern,
+  // composed from scratch with oscillators — no samples, no existing track.
+  let musicOn = false;
+  try{ musicOn = localStorage.getItem('mj_music') === 'on'; }catch(e){}
+  let musicTimer = null;
+  let musicStep = 0;
+
+  function synthKick(t){
+    const actx = getSfxCtx();
+    const osc = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, t);
+    osc.frequency.exponentialRampToValueAtTime(45, t + 0.12);
+    gain.gain.setValueAtTime(0.35, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+    osc.connect(gain); gain.connect(actx.destination);
+    osc.start(t); osc.stop(t + 0.16);
+  }
+
+  function synthHat(t, volume=0.08){
+    const actx = getSfxCtx();
+    const bufferSize = actx.sampleRate * 0.04;
+    const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+    const src = actx.createBufferSource();
+    src.buffer = buffer;
+    const hp = actx.createBiquadFilter();
+    hp.type = 'highpass'; hp.frequency.value = 7000;
+    const gain = actx.createGain();
+    gain.gain.setValueAtTime(volume, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+    src.connect(hp); hp.connect(gain); gain.connect(actx.destination);
+    src.start(t);
+  }
+
+  function synthBassNote(t, freq, duration=0.18){
+    const actx = getSfxCtx();
+    const osc = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, t);
+    gain.gain.setValueAtTime(0, t);
+    gain.gain.linearRampToValueAtTime(0.1, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+    osc.connect(gain); gain.connect(actx.destination);
+    osc.start(t); osc.stop(t + duration + 0.02);
+  }
+
+  const BASS_NOTES = [82.4, 82.4, 110, 82.4, 98, 82.4, 73.4, 82.4];
+  const KICK_STEPS = [1,0,0,1,0,1,0,0];
+  const HAT_STEPS =  [1,1,1,1,1,1,1,1];
+
+  function scheduleMusicStep(){
+    if(!musicOn) return;
+    const actx = getSfxCtx();
+    const stepDur = 0.22;
+    const t = actx.currentTime + 0.05;
+    const i = musicStep % 8;
+
+    if(KICK_STEPS[i]) synthKick(t);
+    if(HAT_STEPS[i]) synthHat(t, i%2===0 ? 0.09 : 0.05);
+    synthBassNote(t, BASS_NOTES[i], stepDur*0.9);
+
+    musicStep++;
+    musicTimer = setTimeout(scheduleMusicStep, stepDur*1000);
+  }
+
+  function startMusic(){
+    if(musicOn) return;
+    musicOn = true;
+    musicStep = 0;
+    try{ localStorage.setItem('mj_music', 'on'); }catch(e){}
+    scheduleMusicStep();
+  }
+
+  function stopMusic(){
+    musicOn = false;
+    try{ localStorage.setItem('mj_music', 'off'); }catch(e){}
+    if(musicTimer){ clearTimeout(musicTimer); musicTimer = null; }
+  }
+
+  function dayKey(ts){
+    const d = new Date(ts);
+    return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  }
+
+  function computeStreak(){
+    if(scoreLog.length === 0) return 0;
+    const days = [...new Set(scoreLog.map(s => dayKey(s.t)))].sort();
+    const today = dayKey(Date.now());
+    const yesterday = dayKey(Date.now() - 86400000);
+    if(!days.includes(today) && !days.includes(yesterday)) return 0;
+
+    let streak = 0;
+    let cursor = days.includes(today) ? new Date() : new Date(Date.now() - 86400000);
+    const daySet = new Set(days);
+    while(daySet.has(dayKey(cursor.getTime()))){
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
+    return streak;
+  }
+
+  function resizeCanvas(){
+    overlay.width = overlay.clientWidth;
+    overlay.height = overlay.clientHeight;
+  }
+  window.addEventListener('resize', resizeCanvas);
+
+  function drawSkeletonOn(targetCtx, targetCanvas, landmarks){
+    targetCtx.clearRect(0,0,targetCanvas.width, targetCanvas.height);
+    if(!landmarks) return;
+
+    const connections = [
+      [11,12],[11,13],[13,15],[12,14],[14,16],
+      [11,23],[12,24],[23,24],
+      [23,25],[25,27],[24,26],[26,28],
+      [27,31],[28,32],
+      [15,17],[15,19],[15,21],
+      [16,18],[16,20],[16,22]
+    ];
+
+    targetCtx.strokeStyle = 'rgba(232,185,63,0.85)';
+    targetCtx.lineWidth = 3;
+    targetCtx.lineCap = 'round';
+
+    connections.forEach(([a,b])=>{
+      const pa = landmarks[a], pb = landmarks[b];
+      if(!pa || !pb) return;
+      if((pa.visibility ?? 1) < 0.3 || (pb.visibility ?? 1) < 0.3) return;
+      targetCtx.beginPath();
+      targetCtx.moveTo(pa.x * targetCanvas.width, pa.y * targetCanvas.height);
+      targetCtx.lineTo(pb.x * targetCanvas.width, pb.y * targetCanvas.height);
+      targetCtx.stroke();
+    });
+
+    targetCtx.fillStyle = 'rgba(245,243,238,0.9)';
+    landmarks.forEach(p=>{
+      if((p.visibility ?? 1) < 0.3) return;
+      targetCtx.beginPath();
+      targetCtx.arc(p.x*targetCanvas.width, p.y*targetCanvas.height, 3.5, 0, Math.PI*2);
+      targetCtx.fill();
+    });
+  }
+
+  function drawSkeleton(landmarks){
+    resizeCanvasIfNeeded();
+    drawSkeletonOn(ctx, overlay, landmarks);
+  }
+
+  let lastCanvasSizeCheck = 0;
+  function resizeCanvasIfNeeded(){
+    const now = performance.now();
+    if(now - lastCanvasSizeCheck > 500){
+      resizeCanvas();
+      lastCanvasSizeCheck = now;
+    }
+  }
+
+  function onPoseResults(results){
+    latestLandmarks = results.poseLandmarks || null;
+    drawSkeleton(latestLandmarks);
+    if(recording && latestLandmarks){
+      recordedFrames.push(latestLandmarks.map(p => ({x:p.x, y:p.y, z:p.z, visibility:p.visibility})));
+    }
+  }
+
+  async function initPose(){
+    pose = new Pose({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/${file}`});
+    pose.setOptions({
+      modelComplexity: 1,
+      smoothLandmarks: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
+    pose.onResults(onPoseResults);
+  }
+
+  async function startCamera(){
+    camLabel.textContent = 'Starting…';
+    try{
+      await initPose();
+      camera = new Camera(video, {
+        onFrame: async () => { await pose.send({image: video}); },
+        width: 640,
+        height: 480
+      });
+      await camera.start();
+      cameraOn = true;
+      idleOverlay.style.display = 'none';
+      camDot.classList.add('ready');
+      camLabel.textContent = 'Camera ready';
+      recordBtn.disabled = false;
+      resizeCanvas();
+      comboCamNotice.style.display = 'none';
+      comboRecordBtn.disabled = comboRunning;
+    }catch(err){
+      camLabel.textContent = 'Camera blocked';
+      const isNotAllowed = err && (err.name === 'NotAllowedError' || /not allowed/i.test(err.message||''));
+      let html = `<p>Couldn't access your camera.</p>`;
+      if(isNotAllowed){
+        html += `<div class="camera-error-box"><strong>If you're viewing this inside an embedded preview</strong> (an editor tool, or a chat app's built-in viewer), some browsers block camera access for embedded frames entirely — no permission popup ever appears, even if you tap Allow. Open this file's own tab directly in your browser rather than through the embedded preview, then try again. If you're already in a normal browser tab, check your browser's site settings and make sure camera access is set to Allow for this page.</div>`;
+      } else {
+        html += `<p>Check your browser's camera permissions for this site and try again.</p>`;
+      }
+      html += `<button class="btn-primary" id="retryCamBtn">Try Again</button>`;
+      idleOverlay.innerHTML = html;
+      document.getElementById('retryCamBtn').addEventListener('click', startCamera);
+      console.error(err);
+    }
+  }
+
+  startCamBtn.addEventListener('click', startCamera);
+
+  const SELF_JUDGE_METRICS = {
+    moonwalk: ['Glide (feet looked like they slid)', 'Smoothness (no jerky bounce)', 'Torso control (upper body stayed still)', 'Overall energy'],
+    spin: ['Speed of the whip turn', 'Smoothness through rotation', 'Balance on the landing', 'Clean finish pose'],
+    lean: ['How far you leaned', 'How long you held it', 'Straight-line body control', 'Smooth recovery'],
+    pointfreeze: ['Speed of the snap into pose', 'Stillness of the freeze', 'Full extension', 'Confidence of the pose'],
+    toestand: ['Height/control rising onto toes', 'Balance at the top', 'Length of the hold', 'Smoothness overall'],
+    kick: ['Sharpness of the kick', 'Height of the kick', 'Landing control', 'Standing-leg stability'],
+    robot: ['Isolation between joints', 'Sharp stop-starts', 'Hold per movement', 'Overall mechanical feel'],
+    headsnap: ['Sharpness of the snap', 'How precisely you stopped', 'Shoulder stillness (isolation)', 'On-beat timing'],
+    sideglide: ['Smoothness of the glide', 'Low, bounce-free footwork', 'Consistent speed', 'Overall energy'],
+    crotchgrab: ['Sharpness of the accent', 'How well you held the beat', 'Overall body control', 'Confidence of the pose'],
+    unisonhit: ['Power of the big hit', 'How dead-still the freeze was', 'Clarity of the movement', 'On-beat timing'],
+    hattip: ['Reach up to the hat', 'Sharpness of the flick', 'How well you held the beat after', 'Overall style'],
+    jacketmove: ['Sharpness of the pop/tug', 'How punchy the accent felt', 'Clean finishing pose', 'Overall control'],
+    kneedrop: ['Control on the way down', 'Straight-back posture', 'Length of the hold', 'Smoothness of recovery'],
+    footstomp: ['Impact of the stomp', 'Balance on the standing leg', 'Sharpness of the accent', 'Recovery afterward'],
+    circleglide: ['Smoothness of the circular path', 'Low, gliding footwork', 'Consistency around the circle', 'Overall energy'],
+    jacksonshuffle: ['Speed/lightness of footwork', 'Rhythm consistency', 'Looseness of upper body', 'Overall energy'],
+    fedoratilt: ['Reach to the hat', 'Control of the tilt', 'Length of the held pose', 'Overall style'],
+    sidewalk: ['Clarity of each step', 'On-beat rhythm', 'Balance throughout', 'Overall style']
+  };
+
+  function buildSelfJudgeSliders(move){
+    sjMoveLabel.textContent = MOVE_LABELS[move];
+    sjSliders.innerHTML = '';
+    SELF_JUDGE_METRICS[move].forEach((label, i)=>{
+      const row = document.createElement('div');
+      row.className = 'sj-metric';
+      row.innerHTML = `<span>${label}</span><input type="range" min="1" max="10" value="6" data-idx="${i}"><span class="sj-val">6</span>`;
+      const input = row.querySelector('input');
+      const valSpan = row.querySelector('.sj-val');
+      input.addEventListener('input', ()=>{ valSpan.textContent = input.value; });
+      sjSliders.appendChild(row);
+    });
+  }
+
+  noCameraBtn.addEventListener('click', ()=>{
+    buildSelfJudgeSliders(moveSelect.value);
+    selfJudgePanel.classList.add('show');
+    selfJudgePanel.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  function updateRecordBtnLabel(){
+    const secs = moveSelect.value === 'unisonhit' ? 20 : 5;
+    recordBtn.textContent = `Record ${secs}s Take`;
+  }
+
+  function getPersonalBest(move){
+    const moveScores = scoreLog.filter(s => s.move === move).map(s => s.score);
+    return moveScores.length ? Math.max(...moveScores) : null;
+  }
+
+  function updateBestBadge(){
+    const best = getPersonalBest(moveSelect.value);
+    if(best === null){
+      bestBadge.style.display = 'none';
+    } else {
+      bestBadge.style.display = 'inline-flex';
+      bestBadge.textContent = `Best: ${best.toFixed(1)}`;
+    }
+  }
+
+  moveSelect.addEventListener('change', ()=>{
+    if(selfJudgePanel.classList.contains('show')){
+      buildSelfJudgeSliders(moveSelect.value);
+    }
+    updateRecordBtnLabel();
+    updateBestBadge();
+  });
+  updateRecordBtnLabel();
+  updateBestBadge();
+
+  sjSubmitBtn.addEventListener('click', ()=>{
+    const move = moveSelect.value;
+    const inputs = [...sjSliders.querySelectorAll('input')];
+    const labels = SELF_JUDGE_METRICS[move];
+    const metrics = {};
+    inputs.forEach((inp, i)=>{
+      const shortLabel = labels[i].split(' (')[0];
+      metrics[shortLabel] = parseInt(inp.value,10) / 10;
+    });
+    const values = Object.values(metrics);
+    let score = Math.round((values.reduce((a,b)=>a+b,0)/values.length) * 10 * 10) / 10;
+    score = Math.max(1, Math.min(10, score));
+    scorePanel.classList.remove('show');
+    renderScore(move, {score, metrics});
+    scorePanel.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+
+  const tabVoice = document.getElementById('tabVoice');
+  const voicePanel = document.getElementById('voicePanel');
+  const tabCombo = document.getElementById('tabCombo');
+  const comboPanel = document.getElementById('comboPanel');
+  const tabSuggest = document.getElementById('tabSuggest');
+  const suggestPanel = document.getElementById('suggestPanel');
+  const tabFriends = document.getElementById('tabFriends');
+  const friendsPanel = document.getElementById('friendsPanel');
+  const stageWrapHome = document.getElementById('stageWrapHome');
+  const comboStageSlot = document.getElementById('comboStageSlot');
+
+  function showPanel(which){
+    tabStage.classList.toggle('active', which==='stage');
+    tabCombo.classList.toggle('active', which==='combo');
+    tabVoice.classList.toggle('active', which==='voice');
+    tabFriends.classList.toggle('active', which==='friends');
+    tabTutorial.classList.toggle('active', which==='tutorial');
+    tabSuggest.classList.toggle('active', which==='suggest');
+    stagePanel.classList.toggle('hidden', which!=='stage');
+    comboPanel.classList.toggle('hidden', which!=='combo');
+    voicePanel.classList.toggle('hidden', which!=='voice');
+    friendsPanel.classList.toggle('hidden', which!=='friends');
+    tutorialPanel.classList.toggle('hidden', which!=='tutorial');
+    suggestPanel.classList.toggle('hidden', which!=='suggest');
+
+    if(which === 'combo'){
+      comboStageSlot.appendChild(stageWrap);
+    } else if(stageWrapHome && stageWrap.parentElement !== stageWrapHome.parentElement){
+      stageWrapHome.insertAdjacentElement('afterend', stageWrap);
+    }
+    resizeCanvas();
+  }
+  tabStage.addEventListener('click', ()=> showPanel('stage'));
+  tabCombo.addEventListener('click', ()=> { showPanel('combo'); initComboSelects(); });
+  tabVoice.addEventListener('click', ()=> showPanel('voice'));
+  tabFriends.addEventListener('click', ()=> showPanel('friends'));
+  tabTutorial.addEventListener('click', ()=> showPanel('tutorial'));
+  tabSuggest.addEventListener('click', ()=> { showPanel('suggest'); renderSuggestions(); });
+
+  const appContainer = document.getElementById('appContainer');
+  const modeButtons = [...document.querySelectorAll('.mode-btn')];
+
+  function applyMode(mode){
+    appContainer.classList.remove('mode-phone','mode-ipad','mode-desktop');
+    appContainer.classList.add('mode-' + mode);
+    modeButtons.forEach(btn=>{
+      btn.classList.toggle('active', btn.dataset.mode === mode);
+    });
+    try{ localStorage.setItem('mj_layout_mode', mode); }catch(e){}
+    resizeCanvas();
+  }
+
+  modeButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=> applyMode(btn.dataset.mode));
+  });
+
+  let savedMode = 'phone';
+  try{ savedMode = localStorage.getItem('mj_layout_mode') || 'phone'; }catch(e){}
+  applyMode(savedMode);
+
+  function updateSoundToggleLabel(){
+    soundToggle.textContent = soundOn ? '🔊 Sound On' : '🔇 Sound Off';
+  }
+  updateSoundToggleLabel();
+
+  soundToggle.addEventListener('click', ()=>{
+    soundOn = !soundOn;
+    try{ localStorage.setItem('mj_sound', soundOn ? 'on' : 'off'); }catch(e){}
+    updateSoundToggleLabel();
+
+    const existingNotice = document.getElementById('sfxDiagNotice');
+    if(existingNotice) existingNotice.remove();
+
+    if(soundOn){
+      SFX.click();
+      setTimeout(()=>{
+        const blocked = !sfxCtx || sfxCtx.state !== 'running' || sfxLastError;
+        if(blocked){
+          const notice = document.createElement('div');
+          notice.id = 'sfxDiagNotice';
+          notice.style.cssText = 'max-width:560px; margin:10px auto 0; padding:10px 14px; background:rgba(184,40,63,0.1); border:1px solid rgba(184,40,63,0.3); border-radius:10px; font-size:11.5px; color:#e6c3ca; text-align:center; line-height:1.5;';
+          const reason = sfxLastError ? (sfxLastError.name || sfxLastError.message || 'unknown error')
+                        : (!sfxCtx ? 'AudioContext unavailable' : `context state: ${sfxCtx.state}`);
+          notice.textContent = `Audio couldn't start (${reason}). This usually means the page is inside an embedded preview that blocks audio — open this file in its own browser tab to fix it.`;
+          soundToggle.insertAdjacentElement('afterend', notice);
+        }
+      }, 150);
+    }
+  });
+
+  function updateMusicToggleLabel(){
+    musicToggle.textContent = musicOn ? '🎵 Music On' : '🎵 Music Off';
+  }
+  updateMusicToggleLabel();
+
+  musicToggle.addEventListener('click', ()=>{
+    if(musicOn){
+      stopMusic();
+    } else {
+      soundOn = true;
+      startMusic();
+    }
+    updateMusicToggleLabel();
+  });
+
+  // ===== Combo Mode =====
+  const comboSelectList = document.getElementById('comboSelectList');
+  const comboCountInput = document.getElementById('comboCountInput');
+  const comboCountMinus = document.getElementById('comboCountMinus');
+  const comboCountPlus = document.getElementById('comboCountPlus');
+  const comboCamNotice = document.getElementById('comboCamNotice');
+  const comboStepBadge = document.getElementById('comboStepBadge');
+  const comboRecordBtn = document.getElementById('comboRecordBtn');
+  const comboResetBtn = document.getElementById('comboResetBtn');
+  const comboScorePanel = document.getElementById('comboScorePanel');
+  const comboScoreNumber = document.getElementById('comboScoreNumber');
+  const comboBreakdown = document.getElementById('comboBreakdown');
+  const comboShareBtn = document.getElementById('comboShareBtn');
+  let comboRunning = false;
+
+  const COMBO_MIN = 2;
+  const COMBO_MAX = Object.keys(MOVE_LABELS).length;
+  let comboCount = 3;
+  let comboSelects = [];
+
+  function buildComboSelect(defaultMoveKey){
+    const sel = document.createElement('select');
+    sel.className = 'combo-select';
+    Object.entries(MOVE_LABELS).forEach(([value, label])=>{
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = label;
+      sel.appendChild(opt);
+    });
+    if(defaultMoveKey) sel.value = defaultMoveKey;
+    return sel;
+  }
+
+  function renderComboSelects(){
+    const moveKeys = Object.keys(MOVE_LABELS);
+    const priorValues = comboSelects.map(s => s.value);
+
+    comboSelectList.innerHTML = '';
+    comboSelects = [];
+    for(let i=0;i<comboCount;i++){
+      const defaultKey = priorValues[i] || moveKeys[i % moveKeys.length];
+      const sel = buildComboSelect(defaultKey);
+      comboSelectList.appendChild(sel);
+      comboSelects.push(sel);
+    }
+    comboCountInput.value = comboCount;
+    comboCountMinus.disabled = comboCount <= COMBO_MIN || comboRunning;
+    comboCountPlus.disabled = comboCount >= COMBO_MAX || comboRunning;
+  }
+
+  function setComboCount(newCount){
+    const clamped = Math.max(COMBO_MIN, Math.min(COMBO_MAX, Math.round(newCount) || COMBO_MIN));
+    if(clamped === comboCount){
+      comboCountInput.value = comboCount;
+      return;
+    }
+    comboCount = clamped;
+    renderComboSelects();
+  }
+
+  comboCountMinus.addEventListener('click', ()=>{
+    if(comboRunning || comboCount <= COMBO_MIN) return;
+    setComboCount(comboCount - 1);
+  });
+  comboCountPlus.addEventListener('click', ()=>{
+    if(comboRunning || comboCount >= COMBO_MAX) return;
+    setComboCount(comboCount + 1);
+  });
+
+  comboCountInput.addEventListener('change', ()=>{
+    if(comboRunning){ comboCountInput.value = comboCount; return; }
+    setComboCount(parseInt(comboCountInput.value, 10));
+  });
+  comboCountInput.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter') comboCountInput.blur();
+  });
+
+  function initComboSelects(){
+    if(comboSelects.length === 0) renderComboSelects();
+    comboCamNotice.style.display = cameraOn ? 'none' : 'block';
+    comboRecordBtn.disabled = comboRunning;
+  }
+
+  async function recordComboSegment(move, stepLabel){
+    comboStepBadge.textContent = stepLabel;
+    await runCountdown();
+    recordedFrames = [];
+    recording = true;
+
+    const duration = move === 'unisonhit' ? 20000 : 5000;
+    const start = performance.now();
+    timerFill.style.width = '0%';
+
+    await new Promise(resolve=>{
+      function tick(){
+        const elapsed = performance.now() - start;
+        timerFill.style.width = Math.min(100, (elapsed/duration)*100) + '%';
+        if(elapsed >= duration){ resolve(); }
+        else { requestAnimationFrame(tick); }
+      }
+      tick();
+    });
+
+    recording = false;
+    timerFill.style.width = '0%';
+    return analyzeFrames(recordedFrames, move);
+  }
+
+  comboRecordBtn.addEventListener('click', async ()=>{
+    if(!cameraOn){
+      alert('Your camera isn\'t on yet. Go to the Stage tab and tap "Step On Stage" first, then come back here.');
+      return;
+    }
+    if(comboRunning) return;
+    SFX.click();
+    comboRunning = true;
+    comboRecordBtn.disabled = true;
+    comboCountMinus.disabled = true;
+    comboCountPlus.disabled = true;
+    comboCountInput.disabled = true;
+    comboSelects.forEach(sel => sel.disabled = true);
+    comboScorePanel.classList.remove('show');
+
+    const moves = comboSelects.map(sel => sel.value);
+    const results = [];
+
+    for(let i=0;i<moves.length;i++){
+      const result = await recordComboSegment(moves[i], `Move ${i+1} of ${moves.length}: ${MOVE_LABELS[moves[i]]}`);
+      results.push({ move: moves[i], result });
+    }
+
+    comboStepBadge.textContent = 'Done';
+
+    const validResults = results.filter(r=>r.result);
+    if(validResults.length === 0){
+      alert("Didn't catch enough movement across the combo — make sure you're fully in frame and try again.");
+    } else {
+      const avgScore = validResults.reduce((sum,r)=>sum + r.result.score, 0) / validResults.length;
+      const finalScore = Math.round(avgScore*10)/10;
+
+      comboScoreNumber.textContent = finalScore.toFixed(1);
+      comboBreakdown.innerHTML = '';
+      results.forEach(r=>{
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:var(--panel-tint); border-radius:8px; font-size:12.5px;';
+        const scoreText = r.result ? r.result.score.toFixed(1) : '—';
+        row.innerHTML = `<span>${MOVE_LABELS[r.move]}</span><span style="color:var(--violet); font-weight:600;">${scoreText}</span>`;
+        comboBreakdown.appendChild(row);
+      });
+      comboScorePanel.classList.add('show');
+      lastComboResult = {
+        title: 'Combo Routine',
+        subtitle: results.map(r=>MOVE_LABELS[r.move]).join(' → '),
+        score: finalScore,
+        metrics: Object.fromEntries(results.map(r=>[MOVE_LABELS[r.move], r.result ? r.result.score/10 : 0]))
+      };
+
+      scoreLog.push({move: 'combo', score: finalScore, t: Date.now()});
+      try{ localStorage.setItem('mj_scores', JSON.stringify(scoreLog)); }catch(e){}
+      renderHistory();
+    }
+
+    comboRunning = false;
+    comboRecordBtn.disabled = !cameraOn;
+    comboSelects.forEach(sel => sel.disabled = false);
+    comboCountMinus.disabled = comboCount <= COMBO_MIN;
+    comboCountPlus.disabled = comboCount >= COMBO_MAX;
+    comboCountInput.disabled = false;
+    comboStepBadge.textContent = 'Ready';
+    resumeMusicIfPending();
+  });
+
+  let lastComboResult = null;
+  comboShareBtn.addEventListener('click', async ()=>{
+    if(!lastComboResult) return;
+    const canvas = generateShareCard(lastComboResult);
+    await downloadShareCard(canvas, 'mj-mirror-combo.png');
+  });
+
+  comboResetBtn.addEventListener('click', ()=>{
+    comboScorePanel.classList.remove('show');
+    comboBreakdown.innerHTML = '';
+  });
+
+
+  const startMicBtn = document.getElementById('startMicBtn');
+  const voiceIdleOverlay = document.getElementById('voiceIdleOverlay');
+  const micIdleExtra = document.getElementById('micIdleExtra');
+  const voiceLiveView = document.getElementById('voiceLiveView');
+  const voiceNoteDisplay = document.getElementById('voiceNoteDisplay');
+  const voiceHzDisplay = document.getElementById('voiceHzDisplay');
+  const voiceRangeBar = document.getElementById('voiceRangeBar');
+  const voiceRecordBtn = document.getElementById('voiceRecordBtn');
+  const voiceResetBtn = document.getElementById('voiceResetBtn');
+  const voiceTimerFill = document.getElementById('voiceTimerFill');
+  const voiceScorePanel = document.getElementById('voiceScorePanel');
+  const voiceScoreNumber = document.getElementById('voiceScoreNumber');
+  const voiceMetricBars = document.getElementById('voiceMetricBars');
+  const voiceTipsList = document.getElementById('voiceTipsList');
+  const voiceShareBtn = document.getElementById('voiceShareBtn');
+
+  const NOTE_NAMES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  function freqToNote(freq){
+    if(!freq || freq <= 0) return null;
+    const midi = Math.round(12 * Math.log2(freq/440) + 69);
+    const name = NOTE_NAMES[((midi % 12)+12)%12];
+    const octave = Math.floor(midi/12) - 1;
+    return { name: name + octave, midi };
+  }
+
+  let audioCtx = null, analyser = null, micStream = null, micSource = null;
+  let micReady = false;
+  let pitchBuf = null;
+  let liveMinMidi = null, liveMaxMidi = null;
+  let recordedMidis = [];
+  let voiceRecording = false;
+  let voiceRafId = null;
+
+  function detectPitch(buf, sampleRate){
+    const SIZE = buf.length;
+    let rms = 0;
+    for(let i=0;i<SIZE;i++){ rms += buf[i]*buf[i]; }
+    rms = Math.sqrt(rms/SIZE);
+    if(rms < 0.01) return -1;
+
+    let r1=0, r2=SIZE-1, thres=0.2;
+    for(let i=0;i<SIZE/2;i++){ if(Math.abs(buf[i])<thres){ r1=i; break; } }
+    for(let i=1;i<SIZE/2;i++){ if(Math.abs(buf[SIZE-i])<thres){ r2=SIZE-i; break; } }
+    const trimmed = buf.slice(r1, r2);
+    const newSize = trimmed.length;
+
+    const c = new Array(newSize).fill(0);
+    for(let lag=0; lag<newSize; lag++){
+      for(let i=0; i<newSize-lag; i++){
+        c[lag] += trimmed[i]*trimmed[i+lag];
+      }
+    }
+    let d = 0;
+    while(d < newSize-1 && c[d] > c[d+1]) d++;
+    let maxVal=-1, maxPos=-1;
+    for(let i=d;i<newSize;i++){
+      if(c[i] > maxVal){ maxVal = c[i]; maxPos = i; }
+    }
+    let T0 = maxPos;
+    if(T0 <= 0) return -1;
+    return sampleRate / T0;
+  }
+
+  async function startMic(){
+    micIdleExtra.innerHTML = '';
+    try{
+      micStream = await navigator.mediaDevices.getUserMedia({audio:true});
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      micSource = audioCtx.createMediaStreamSource(micStream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      pitchBuf = new Float32Array(analyser.fftSize);
+      micSource.connect(analyser);
+
+      micReady = true;
+      voiceIdleOverlay.style.display = 'none';
+      voiceLiveView.style.display = 'flex';
+      voiceRecordBtn.disabled = false;
+      liveMinMidi = null; liveMaxMidi = null;
+      pollPitch();
+    }catch(err){
+      const isNotAllowed = err && (err.name === 'NotAllowedError' || /not allowed/i.test(err.message||''));
+      let html = `<p>Couldn't access your microphone.</p>`;
+      if(isNotAllowed){
+        html += `<div class="camera-error-box">If you're viewing this inside an embedded preview, some browsers block mic access for embedded frames entirely. Open this file's own tab directly in your browser and try again.</div>`;
+      } else {
+        html += `<p>Check your browser's microphone permissions for this site.</p>`;
+      }
+      html += `<button class="btn-primary" id="retryMicBtn">Try Again</button>`;
+      micIdleExtra.innerHTML = html;
+      document.getElementById('retryMicBtn').addEventListener('click', startMic);
+      console.error(err);
+    }
+  }
+
+  function pollPitch(){
+    if(!micReady) return;
+    analyser.getFloatTimeDomainData(pitchBuf);
+    const freq = detectPitch(pitchBuf, audioCtx.sampleRate);
+    if(freq > 60 && freq < 1500){
+      const note = freqToNote(freq);
+      if(note){
+        voiceNoteDisplay.textContent = note.name;
+        voiceHzDisplay.textContent = freq.toFixed(0) + ' Hz';
+        if(liveMinMidi === null || note.midi < liveMinMidi) liveMinMidi = note.midi;
+        if(liveMaxMidi === null || note.midi > liveMaxMidi) liveMaxMidi = note.midi;
+        if(voiceRecording) recordedMidis.push(note.midi);
+
+        if(liveMinMidi !== null && liveMaxMidi !== null){
+          const span = Math.max(1, liveMaxMidi - liveMinMidi);
+          const pct = Math.min(100, span * 4);
+          voiceRangeBar.style.width = pct + '%';
+        }
+      }
+    } else {
+      voiceNoteDisplay.textContent = '—';
+      voiceHzDisplay.textContent = '— Hz';
+    }
+    voiceRafId = requestAnimationFrame(pollPitch);
+  }
+
+  startMicBtn.addEventListener('click', startMic);
+
+  function sleepMs(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+  voiceRecordBtn.addEventListener('click', async ()=>{
+    if(!micReady || voiceRecording) return;
+    SFX.click();
+    const musicWasOn = musicOn;
+    if(musicWasOn) stopMusic();
+    voiceRecordBtn.disabled = true;
+    voiceScorePanel.classList.remove('show');
+    recordedMidis = [];
+    voiceRecording = true;
+
+    const duration = 8000;
+    const start = performance.now();
+    await new Promise(resolve=>{
+      function tick(){
+        const elapsed = performance.now() - start;
+        voiceTimerFill.style.width = Math.min(100, (elapsed/duration)*100) + '%';
+        if(elapsed >= duration) resolve();
+        else requestAnimationFrame(tick);
+      }
+      tick();
+    });
+
+    voiceRecording = false;
+    voiceTimerFill.style.width = '0%';
+    voiceRecordBtn.disabled = false;
+    if(musicWasOn){ startMusic(); updateMusicToggleLabel(); }
+
+    if(recordedMidis.length < 5){
+      alert("Didn't catch enough clear pitch — try singing a bit louder or closer to the mic, sliding from a low note up to your highest falsetto.");
+      return;
+    }
+    scoreVoice(recordedMidis);
+  });
+
+  const MJ_FALSETTO_TARGET = 78;
+
+  function scoreVoice(midis){
+    const minMidi = Math.min(...midis);
+    const maxMidi = Math.max(...midis);
+    const span = maxMidi - minMidi;
+
+    const rangeScore = Math.max(0, Math.min(1, span / 36));
+    const reachDiff = Math.abs(maxMidi - MJ_FALSETTO_TARGET);
+    const reachScore = Math.max(0, 1 - (reachDiff / 24));
+
+    let jumpiness = 0;
+    for(let i=1;i<midis.length;i++){ jumpiness += Math.abs(midis[i]-midis[i-1]); }
+    jumpiness = jumpiness / midis.length;
+    const styleScore = Math.max(0, Math.min(1, jumpiness / 6));
+
+    const falsettoNotes = midis.filter(m => m >= 72).length;
+    const falsettoScore = Math.max(0, Math.min(1, falsettoNotes / midis.length * 2));
+
+    const metrics = {
+      Range: rangeScore,
+      'Falsetto Reach': reachScore,
+      'Vocal Punch': styleScore,
+      'Falsetto Use': falsettoScore
+    };
+    const values = Object.values(metrics);
+    let score = (values.reduce((a,b)=>a+b,0)/values.length) * 10;
+    score = score + (Math.random()*0.3 - 0.15);
+    score = Math.max(1, Math.min(10, Math.round(score*10)/10));
+
+    voiceScoreNumber.textContent = score.toFixed(1);
+    voiceMetricBars.innerHTML = '';
+    Object.entries(metrics).forEach(([label,val])=>{
+      const pct = Math.round(Math.max(0.05,val)*100);
+      const row = document.createElement('div');
+      row.className = 'metric';
+      row.innerHTML = `<span>${label}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><span>${pct}%</span>`;
+      voiceMetricBars.appendChild(row);
+    });
+
+    const tips = [];
+    if(rangeScore < 0.5) tips.push("Try sliding smoothly from your lowest comfortable note all the way up to your highest falsetto squeak — a wider slide raises your range score.");
+    if(reachScore < 0.5) tips.push("MJ's falsetto famously sat high — push further into your head voice or falsetto break to close the gap.");
+    if(styleScore < 0.4) tips.push("Add some punchy, percussive accents — short sharp notes or ad-lib style 'hee!' or 'ow!' style jumps — instead of one smooth held tone.");
+    if(falsettoScore < 0.4) tips.push("Spend more of your sample up in falsetto range rather than your natural chest voice.");
+    if(tips.length === 0) tips.push("Wide range, strong falsetto reach, and punchy accents — that's a strong match to his documented vocal style.");
+    tips.push("This compares vocal range and style patterns only — not tone, timbre, or actual similarity of your singing voice to his recordings.");
+
+    voiceTipsList.innerHTML = '';
+    tips.forEach(t=>{
+      const li = document.createElement('li');
+      li.textContent = t;
+      voiceTipsList.appendChild(li);
+    });
+    voiceScorePanel.classList.add('show');
+    lastVoiceResult = { title: 'Voice Match', subtitle: 'Vocal Range & Style', score, metrics };
+  }
+
+  let lastVoiceResult = null;
+  voiceShareBtn.addEventListener('click', async ()=>{
+    if(!lastVoiceResult) return;
+    const canvas = generateShareCard(lastVoiceResult);
+    await downloadShareCard(canvas, 'mj-mirror-voice-match.png');
+  });
+
+  voiceResetBtn.addEventListener('click', ()=>{
+    liveMinMidi = null; liveMaxMidi = null;
+    voiceRangeBar.style.width = '0%';
+    voiceScorePanel.classList.remove('show');
+  });
+
+  function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
+
+  async function runCountdown(){
+    const musicWasOn = musicOn;
+    if(musicWasOn) stopMusic();
+
+    countdownEl.style.display = 'flex';
+    for(const n of [3,2,1]){
+      countdownEl.textContent = n;
+      SFX.tick();
+      await sleep(700);
+    }
+    countdownEl.textContent = 'GO!';
+    SFX.go();
+    await sleep(400);
+    countdownEl.style.display = 'none';
+
+    if(musicWasOn) pendingMusicResume = true;
+  }
+
+  let pendingMusicResume = false;
+  function resumeMusicIfPending(){
+    if(pendingMusicResume){
+      pendingMusicResume = false;
+      startMusic();
+      updateMusicToggleLabel();
+    }
+  }
+
+  function dist(a,b){
+    return Math.hypot(a.x-b.x, a.y-b.y, (a.z||0)-(b.z||0));
+  }
+
+  function analyzeFrames(frames, move){
+    if(frames.length < 8){
+      return null;
+    }
+
+    let totalMovement = 0;
+    let jerk = 0;
+    let velocities = [];
+    let ankleAsymmetry = [];
+    let torsoStability = [];
+    let armExtension = [];
+    let lastVel = null;
+
+    let legMove = 0;
+    let armMove = 0;
+    let headMove = 0;
+
+    for(let i=1;i<frames.length;i++){
+      const prev = frames[i-1], cur = frames[i];
+      let frameMove = 0;
+      const trackedIdx = [11,12,13,14,15,16,23,24,25,26,27,28];
+      trackedIdx.forEach(idx=>{
+        if(prev[idx] && cur[idx]){
+          frameMove += dist(prev[idx], cur[idx]);
+        }
+      });
+      velocities.push(frameMove);
+      totalMovement += frameMove;
+
+      if(lastVel !== null){
+        jerk += Math.abs(frameMove - lastVel);
+      }
+      lastVel = frameMove;
+
+      const legIdx = [23,24,25,26,27,28,29,30,31,32];
+      legIdx.forEach(idx=>{ if(prev[idx] && cur[idx]) legMove += dist(prev[idx], cur[idx]); });
+
+      const armIdx = [11,12,13,14,15,16];
+      armIdx.forEach(idx=>{ if(prev[idx] && cur[idx]) armMove += dist(prev[idx], cur[idx]); });
+
+      const headIdx = [0,1,2,3,4,5,6,7,8,9,10];
+      headIdx.forEach(idx=>{ if(prev[idx] && cur[idx]) headMove += dist(prev[idx], cur[idx]); });
+
+      if(cur[27] && cur[28]){
+        ankleAsymmetry.push(Math.abs(cur[27].y - cur[28].y));
+      }
+      if(cur[11] && cur[12]){
+        torsoStability.push({x:(cur[11].x+cur[12].x)/2, y:(cur[11].y+cur[12].y)/2});
+      }
+      if(cur[15] && cur[11] && cur[16] && cur[12]){
+        armExtension.push((dist(cur[15],cur[11]) + dist(cur[16],cur[12]))/2);
+      }
+    }
+
+    const avgVel = totalMovement / velocities.length;
+    const smoothness = 1 - Math.min(1, (jerk / velocities.length) / (avgVel + 0.001) / 3);
+
+    let torsoDrift = 0;
+    for(let i=1;i<torsoStability.length;i++){
+      torsoDrift += dist(torsoStability[i-1], torsoStability[i]);
+    }
+    const torsoDriftAvg = torsoDrift / Math.max(1,torsoStability.length);
+
+    const maxArmExt = Math.max(...armExtension, 0);
+    const avgAnkleAsym = ankleAsymmetry.reduce((a,b)=>a+b,0) / Math.max(1,ankleAsymmetry.length);
+
+    const holdWindow = velocities.slice(Math.floor(velocities.length*0.75));
+    const holdVariance = holdWindow.length ? holdWindow.reduce((a,b)=>a+b,0)/holdWindow.length : avgVel;
+    const holdStability = 1 - Math.min(1, holdVariance / (avgVel + 0.001));
+
+    const regionTotal = legMove + armMove + headMove + 0.0001;
+    const legShare = legMove / regionTotal;
+    const armShare = armMove / regionTotal;
+    const headShare = headMove / regionTotal;
+
+    function regionGate(share, minShare){
+      if(share >= minShare) return 1;
+      return Math.max(0, share / minShare) ** 2;
+    }
+
+    function targetCurve(value, ideal, tolerance){
+      const diff = Math.abs(value - ideal) / tolerance;
+      return Math.max(0, 1 - diff*diff);
+    }
+
+    const attemptGate = Math.min(1, avgVel * 40);
+
+    let energy = targetCurve(avgVel, 0.05, 0.055) * attemptGate;
+    let flow = Math.pow(Math.max(0, smoothness), 1.6) * attemptGate;
+    let control = Math.pow(Math.max(0, 1 - torsoDriftAvg*18), 1.5);
+    let stage = targetCurve(maxArmExt, 0.32, 0.22) * attemptGate;
+    let hold = Math.pow(Math.max(0, holdStability), 1.4);
+    let slideFeel = targetCurve(avgAnkleAsym, 0.16, 0.13) * attemptGate;
+
+    const legGate = regionGate(legShare, 0.42);
+    const armGate = regionGate(armShare, 0.42);
+    const headGate = regionGate(headShare, 0.22);
+
+    let metrics;
+    if(move === 'moonwalk'){
+      metrics = { Glide: slideFeel * legGate, Smoothness: flow * legGate, Control: control, Energy: energy * legGate };
+    } else if(move === 'spin'){
+      metrics = { Energy: energy, Smoothness: flow, Balance: control, Finish: hold };
+    } else if(move === 'lean'){
+      metrics = { Hold: hold, Control: control, Commitment: stage, Smoothness: flow };
+    } else if(move === 'pointfreeze'){
+      metrics = { Snap: energy * armGate, Freeze: hold, Extension: stage * armGate, Control: control };
+    } else if(move === 'kick'){
+      const peakV = Math.max(...velocities, 0);
+      const peakVel = targetCurve(peakV, 0.16, 0.12) * attemptGate * legGate;
+      metrics = { Snap: peakVel, Height: stage, Landing: hold, Balance: control * legGate };
+    } else if(move === 'robot'){
+      const jerkRatio = (jerk/velocities.length) / (avgVel+0.001);
+      const isolation = targetCurve(jerkRatio, 1.7, 1.1) * attemptGate;
+      metrics = { Isolation: isolation, Sharpness: energy, HoldPerBeat: hold, Control: control };
+    } else if(move === 'headsnap'){
+      const peakV = Math.max(...velocities, 0);
+      const peakVel = targetCurve(peakV, 0.14, 0.1) * attemptGate * headGate;
+      metrics = { Snap: peakVel, Precision: hold, Isolation: control * headGate, Timing: energy };
+    } else if(move === 'sideglide'){
+      metrics = { Glide: slideFeel * legGate, Smoothness: flow * legGate, Consistency: control, Energy: energy * legGate };
+    } else if(move === 'crotchgrab'){
+      const peakV = Math.max(...velocities, 0);
+      const snap = targetCurve(peakV, 0.15, 0.11) * attemptGate * armGate;
+      metrics = { Snap: snap, Hold: hold, Control: control, Confidence: stage * armGate };
+    } else if(move === 'unisonhit'){
+      const peakV = Math.max(...velocities, 0);
+      const bigHit = targetCurve(peakV, 0.2, 0.14) * attemptGate;
+      metrics = { 'Hit Power': bigHit, Freeze: hold, Clarity: control, Timing: energy };
+    } else if(move === 'hattip'){
+      const peakV = Math.max(...velocities, 0);
+      const flick = targetCurve(peakV, 0.13, 0.1) * attemptGate * armGate;
+      metrics = { Reach: stage * armGate, Flick: flick, Hold: hold, Style: control };
+    } else if(move === 'jacketmove'){
+      const peakV = Math.max(...velocities, 0);
+      const pop = targetCurve(peakV, 0.16, 0.12) * attemptGate * armGate;
+      metrics = { Pop: pop, Sharpness: energy * armGate, Finish: hold, Control: control };
+    } else if(move === 'kneedrop'){
+      const descent = targetCurve(avgVel, 0.06, 0.06) * attemptGate * legGate;
+      metrics = { Control: control * legGate, Descent: descent, Hold: hold, Recovery: energy * legGate };
+    } else if(move === 'footstomp'){
+      const peakV = Math.max(...velocities, 0);
+      const stomp = targetCurve(peakV, 0.17, 0.12) * attemptGate * legGate;
+      metrics = { Impact: stomp, Balance: control * legGate, Sharpness: energy * legGate, Recovery: hold };
+    } else if(move === 'circleglide'){
+      metrics = { Glide: slideFeel * legGate, Smoothness: flow * legGate, Consistency: control, Energy: energy * legGate };
+    } else if(move === 'jacksonshuffle'){
+      metrics = { Footwork: energy * legGate, Rhythm: flow * legGate, Lightness: hold, Control: control };
+    } else if(move === 'fedoratilt'){
+      const peakV = Math.max(...velocities, 0);
+      const tilt = targetCurve(peakV, 0.09, 0.08) * attemptGate * armGate;
+      metrics = { Reach: stage * armGate, Tilt: tilt, Hold: hold, Style: control };
+    } else if(move === 'sidewalk'){
+      metrics = { Rhythm: energy * legGate, Steps: flow * legGate, Balance: control, Style: hold };
+    } else {
+      metrics = { Balance: control, Hold: hold, Control: control, Energy: energy };
+    }
+
+    const values = Object.values(metrics);
+    const rawAvg = values.reduce((a,b)=>a+b,0) / values.length;
+    let score = Math.round(rawAvg * 10 * 10) / 10;
+    score = score + (Math.random()*0.3 - 0.15);
+    score = Math.max(1, Math.min(10, Math.round(score * 10) / 10));
+
+    return { score, metrics };
+  }
+
+  function pickTips(move, metrics, score){
+    const pool = MOVE_TIPS[move];
+    const sorted = Object.entries(metrics).sort((a,b)=>a[1]-b[1]);
+    let tips = [];
+
+    if(score >= 8.5){
+      tips.push("That's a strong take. Try it again and see if you can hold it just as clean twice in a row.");
+    } else if(score >= 6.5){
+      tips.push("Solid rhythm overall. A couple of small adjustments will push this into the 8+ range.");
+    } else {
+      tips.push("Good first attempt — the mechanics are there. Focus on one fix at a time rather than all at once.");
+    }
+
+    tips = tips.concat(pool.slice(0,3));
+    return tips;
+  }
+
+  function renderScore(move, result){
+    scoreMoveName.textContent = MOVE_LABELS[move].toUpperCase();
+    scoreNumber.textContent = result.score.toFixed(1);
+    metricBars.innerHTML = '';
+    Object.entries(result.metrics).forEach(([label,val])=>{
+      const pct = Math.round(Math.max(0.08,val)*100);
+      const row = document.createElement('div');
+      row.className = 'metric';
+      row.innerHTML = `<span>${label}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><span>${pct}%</span>`;
+      metricBars.appendChild(row);
+    });
+
+    tipsList.innerHTML = '';
+    pickTips(move, result.metrics, result.score).forEach(t=>{
+      const li = document.createElement('li');
+      li.textContent = t;
+      tipsList.appendChild(li);
+    });
+
+    scorePanel.classList.add('show');
+    lastRenderedResult = { title: MOVE_LABELS[move], subtitle: 'Dance Score', score: result.score, metrics: result.metrics };
+
+    const priorBest = getPersonalBest(move);
+    const isNewBest = priorBest === null || result.score > priorBest;
+    newBestBanner.classList.toggle('show', isNewBest);
+
+    if(isNewBest && priorBest !== null){
+      SFX.newBest();
+    } else {
+      playScoreSfx(result.score);
+    }
+
+    scoreLog.push({move, score: result.score, t: Date.now()});
+    localStorage.setItem('mj_scores', JSON.stringify(scoreLog));
+    renderHistory();
+    updateBestBadge();
+
+    if(activeChallengeId){
+      submitChallengeScore(activeChallengeId, result.score);
+    }
+  }
+
+  let lastRenderedResult = null;
+  shareBtn.addEventListener('click', async ()=>{
+    if(!lastRenderedResult) return;
+    const canvas = generateShareCard(lastRenderedResult);
+    await downloadShareCard(canvas, `mj-mirror-${lastRenderedResult.title.replace(/\s+/g,'-').toLowerCase()}.png`);
+  });
+
+  function generateShareCard({ title, subtitle, score, metrics }){
+    const W = 900, H = 1125;
+    const canvas = document.createElement('canvas');
+    canvas.width = W; canvas.height = H;
+    const c = canvas.getContext('2d');
+
+    const bgGrad = c.createLinearGradient(0,0,W,H);
+    bgGrad.addColorStop(0, '#0a0a0c');
+    bgGrad.addColorStop(1, '#17131f');
+    c.fillStyle = bgGrad;
+    c.fillRect(0,0,W,H);
+
+    function glow(x,y,r,color){
+      const g = c.createRadialGradient(x,y,0,x,y,r);
+      g.addColorStop(0, color);
+      g.addColorStop(1, 'transparent');
+      c.fillStyle = g;
+      c.fillRect(0,0,W,H);
+    }
+    glow(180,120,420,'rgba(155,107,217,0.25)');
+    glow(720,180,420,'rgba(62,207,178,0.20)');
+    glow(450,60,500,'rgba(232,185,63,0.18)');
+
+    c.fillStyle = '#e8b93f';
+    c.font = '600 24px "Space Grotesk", sans-serif';
+    c.textAlign = 'center';
+    c.fillText('MICHAEL JACKSON MIRROR', W/2, 100);
+
+    c.font = '400 64px "Bebas Neue", sans-serif';
+    const titleGrad = c.createLinearGradient(0,150,0,230);
+    titleGrad.addColorStop(0, '#ffffff');
+    titleGrad.addColorStop(1, '#e8b93f');
+    c.fillStyle = titleGrad;
+    c.fillText(title.toUpperCase(), W/2, 210);
+
+    if(subtitle){
+      c.font = '400 22px "Space Grotesk", sans-serif';
+      c.fillStyle = '#a9a7a0';
+      c.fillText(subtitle, W/2, 250);
+    }
+
+    c.font = '400 220px "Bebas Neue", sans-serif';
+    const scoreGrad = c.createLinearGradient(0,340,0,560);
+    scoreGrad.addColorStop(0, '#e8b93f');
+    scoreGrad.addColorStop(0.6, '#f2924a');
+    scoreGrad.addColorStop(1, '#e8578f');
+    c.fillStyle = scoreGrad;
+    c.fillText(score.toFixed(1), W/2, 540);
+
+    c.font = '400 34px "Space Grotesk", sans-serif';
+    c.fillStyle = '#8a8880';
+    c.fillText('/ 10', W/2, 585);
+
+    if(metrics && Object.keys(metrics).length){
+      const barColors = [
+        ['#b8283f','#e8b93f'],
+        ['#9b6bd9','#e8578f'],
+        ['#4a9be8','#3ecfb2'],
+        ['#f2924a','#b8e83f']
+      ];
+      const entries = Object.entries(metrics);
+      const startY = 660;
+      const rowH = 76;
+      const barW = 560;
+      const barX = (W-barW)/2;
+
+      entries.forEach(([label,val], i)=>{
+        const y = startY + i*rowH;
+        c.textAlign = 'left';
+        c.font = '500 22px "Space Grotesk", sans-serif';
+        c.fillStyle = '#e6e4de';
+        c.fillText(label, barX, y);
+
+        const pct = Math.max(0.05, Math.min(1,val));
+        c.textAlign = 'right';
+        c.fillStyle = '#a9a7a0';
+        c.fillText(Math.round(pct*100)+'%', barX+barW, y);
+
+        const trackY = y + 14;
+        c.fillStyle = 'rgba(255,255,255,0.08)';
+        roundRect(c, barX, trackY, barW, 10, 5);
+        c.fill();
+
+        const colors = barColors[i % barColors.length];
+        const fillGrad = c.createLinearGradient(barX,0,barX+barW,0);
+        fillGrad.addColorStop(0, colors[0]);
+        fillGrad.addColorStop(1, colors[1]);
+        c.fillStyle = fillGrad;
+        roundRect(c, barX, trackY, barW*pct, 10, 5);
+        c.fill();
+      });
+    }
+
+    c.textAlign = 'center';
+    c.font = '400 18px "Space Grotesk", sans-serif';
+    c.fillStyle = '#5f5d58';
+    c.fillText('Made with Michael Jackson Mirror', W/2, H-50);
+
+    return canvas;
+  }
+
+  function roundRect(ctx, x, y, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.arcTo(x+w, y, x+w, y+h, r);
+    ctx.arcTo(x+w, y+h, x, y+h, r);
+    ctx.arcTo(x, y+h, x, y, r);
+    ctx.arcTo(x, y, x+w, y, r);
+    ctx.closePath();
+  }
+
+  async function downloadShareCard(canvas, filename){
+    const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+    if(!blob){ alert("Couldn't generate the image — try again."); return; }
+
+    const file = new File([blob], filename, { type: 'image/png' });
+    if(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+      try{
+        await navigator.share({ files:[file], title: 'My Michael Jackson Mirror score' });
+        return;
+      }catch(e){ /* user cancelled or share failed — fall back to download */ }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  const streakBadge = document.getElementById('streakBadge');
+
+  function renderStreak(){
+    const streak = computeStreak();
+    streakBadge.textContent = streak > 0
+      ? `🔥 ${streak} day${streak === 1 ? '' : 's'} streak`
+      : `🔥 0 day streak`;
+  }
+
+  function renderHistory(){
+    historyEl.innerHTML = '';
+    const best = Math.max(...scoreLog.map(s=>s.score), 0);
+    scoreLog.slice(-8).forEach(entry=>{
+      const chip = document.createElement('div');
+      let tierClass = entry.score >= 7.5 ? 'tier-high' : entry.score >= 5 ? 'tier-mid' : 'tier-low';
+      chip.className = 'history-chip ' + tierClass + (entry.score === best ? ' best' : '');
+      chip.textContent = `${MOVE_LABELS[entry.move]}: ${entry.score.toFixed(1)}`;
+      historyEl.appendChild(chip);
+    });
+    renderStreak();
+  }
+
+  function renderSuggestions(){
+    suggestList.innerHTML = '';
+    suggestEmptyState.style.display = suggestions.length ? 'none' : 'block';
+    suggestions.slice().reverse().forEach(s=>{
+      const card = document.createElement('div');
+      card.style.cssText = 'background:var(--panel-tint); border:1px solid var(--line); border-radius:10px; padding:12px 14px; display:flex; justify-content:space-between; align-items:flex-start; gap:10px;';
+      const textEl = document.createElement('div');
+      textEl.style.cssText = 'font-size:13px; color:var(--glove); line-height:1.5; white-space:pre-wrap; word-break:break-word;';
+      textEl.textContent = s.text;
+      const delBtn = document.createElement('button');
+      delBtn.textContent = '✕';
+      delBtn.style.cssText = 'background:none; border:none; color:var(--faint-text); font-size:14px; cursor:pointer; flex-shrink:0; padding:2px 4px;';
+      delBtn.addEventListener('click', ()=>{
+        suggestions = suggestions.filter(item => item.id !== s.id);
+        localStorage.setItem('mj_suggestions', JSON.stringify(suggestions));
+        renderSuggestions();
+      });
+      card.appendChild(textEl);
+      card.appendChild(delBtn);
+      suggestList.appendChild(card);
+    });
+  }
+
+  suggestSubmitBtn.addEventListener('click', ()=>{
+    const text = suggestInput.value.trim();
+    if(!text) return;
+    suggestions.push({ id: Date.now() + '-' + Math.random().toString(36).slice(2), text, t: Date.now() });
+    localStorage.setItem('mj_suggestions', JSON.stringify(suggestions));
+    suggestInput.value = '';
+    renderSuggestions();
+    SFX.click();
+  });
+
+  async function recordTake(){
+    if(!cameraOn || recording) return;
+    recordBtn.disabled = true;
+    moveSelect.disabled = true;
+    scorePanel.classList.remove('show');
+
+    await runCountdown();
+
+    recordedFrames = [];
+    recording = true;
+
+    const currentMove = moveSelect.value;
+    const duration = currentMove === 'unisonhit' ? 20000 : 5000;
+    const start = performance.now();
+    timerFill.style.width = '0%';
+
+    await new Promise(resolve=>{
+      function tick(){
+        const elapsed = performance.now() - start;
+        const pct = Math.min(100, (elapsed/duration)*100);
+        timerFill.style.width = pct + '%';
+        if(elapsed >= duration){ resolve(); }
+        else { requestAnimationFrame(tick); }
+      }
+      tick();
+    });
+
+    recording = false;
+    timerFill.style.width = '0%';
+
+    const move = moveSelect.value;
+    const result = analyzeFrames(recordedFrames, move);
+
+    if(!result){
+      alert("Didn't catch enough movement — make sure you're fully in frame and try the take again.");
+      replayBtn.style.display = 'none';
+    } else {
+      lastReplayFrames = recordedFrames.slice();
+      replayBtn.style.display = 'block';
+      renderScore(move, result);
+    }
+
+    recordBtn.disabled = false;
+    moveSelect.disabled = false;
+    resumeMusicIfPending();
+  }
+
+  recordBtn.addEventListener('click', recordTake);
+
+  let replaySpeed = 0.25;
+  const REPLAY_SPEEDS = [0.25, 0.5, 1];
+  let replayPlaying = false;
+
+  function resizeReplayCanvas(){
+    replayCanvas.width = replayCanvas.clientWidth;
+    replayCanvas.height = replayCanvas.clientHeight;
+  }
+
+  async function playReplay(){
+    if(!lastReplayFrames.length || replayPlaying) return;
+    replayPlaying = true;
+    resizeReplayCanvas();
+
+    const totalFrames = lastReplayFrames.length;
+    const baseFrameDelayMs = 1000/30;
+    const frameDelay = baseFrameDelayMs / replaySpeed;
+
+    for(let i=0;i<totalFrames;i++){
+      if(!replayPlaying) break;
+      drawSkeletonOn(replayCtx, replayCanvas, lastReplayFrames[i]);
+      replayProgress.style.width = `${Math.round(((i+1)/totalFrames)*100)}%`;
+      await new Promise(r=>setTimeout(r, frameDelay));
+    }
+    replayPlaying = false;
+  }
+
+  replayBtn.addEventListener('click', ()=>{
+    if(!lastReplayFrames.length) return;
+    replayOverlay.style.display = 'block';
+    replayProgress.style.width = '0%';
+    playReplay();
+  });
+
+  replayCloseBtn.addEventListener('click', ()=>{
+    replayPlaying = false;
+    replayOverlay.style.display = 'none';
+  });
+
+  replayReplayBtn.addEventListener('click', ()=>{
+    replayPlaying = false;
+    replayProgress.style.width = '0%';
+    setTimeout(playReplay, 50);
+  });
+
+  replaySpeedBtn.addEventListener('click', ()=>{
+    const idx = REPLAY_SPEEDS.indexOf(replaySpeed);
+    replaySpeed = REPLAY_SPEEDS[(idx+1) % REPLAY_SPEEDS.length];
+    replaySpeedBtn.textContent = `Speed: ${replaySpeed}x`;
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    scoreLog = [];
+    localStorage.setItem('mj_scores', '[]');
+    scorePanel.classList.remove('show');
+    historyEl.innerHTML = '';
+  });
+
+  renderHistory();
+
+  // ===================================================================
+  // ===== Friends / Accounts / 1v1 Challenges (Firebase Firestore) =====
+  // ===================================================================
+  //
+  // SETUP (one-time, do this before using the Friends tab):
+  //   1. Create a free project at https://console.firebase.google.com
+  //   2. Add a Web App to it, copy the config object it gives you, and
+  //      paste it into FIREBASE_CONFIG below.
+  //   3. Enable Firestore (Build > Firestore Database > Create database,
+  //      "Start in test mode" is fine to try it out).
+  //   4. Recommended Firestore security rules for production use:
+  //        rules_version = '2';
+  //        service cloud.firestore {
+  //          match /databases/{database}/documents {
+  //            match /users/{uid} { allow read: if true; allow write: if true; }
+  //            match /challenges/{id} { allow read, write: if true; }
+  //          }
+  //        }
+  //      (Open rules are used here because this app has no real backend
+  //      auth server — passwords are hashed client-side with SHA-256
+  //      before being stored, but this is still not bank-grade security.
+  //      Don't reuse a real password when signing up.)
+  window.__MJ_FIREBASE_CONFIG_NEEDED__ = true;
+  const FIREBASE_CONFIG = {
+    apiKey: "PASTE_YOUR_FIREBASE_API_KEY",
+    authDomain: "PASTE_YOUR_PROJECT.firebaseapp.com",
+    projectId: "PASTE_YOUR_PROJECT_ID",
+    storageBucket: "PASTE_YOUR_PROJECT.appspot.com",
+    messagingSenderId: "PASTE_YOUR_SENDER_ID",
+    appId: "PASTE_YOUR_APP_ID"
+  };
+
+  const authTabLogin = document.getElementById('authTabLogin');
+  const authTabSignup = document.getElementById('authTabSignup');
+  const loginForm = document.getElementById('loginForm');
+  const signupForm = document.getElementById('signupForm');
+  const authArea = document.getElementById('authArea');
+  const friendsArea = document.getElementById('friendsArea');
+
+  const loginFirstName = document.getElementById('loginFirstName');
+  const loginLastName = document.getElementById('loginLastName');
+  const loginTag = document.getElementById('loginTag');
+  const loginPassword = document.getElementById('loginPassword');
+  const loginError = document.getElementById('loginError');
+  const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+
+  const signupFirstName = document.getElementById('signupFirstName');
+  const signupLastName = document.getElementById('signupLastName');
+  const signupTakenBox = document.getElementById('signupTakenBox');
+  const signupTagRow = document.getElementById('signupTagRow');
+  const signupTag = document.getElementById('signupTag');
+  const signupPassword = document.getElementById('signupPassword');
+  const signupError = document.getElementById('signupError');
+  const signupSubmitBtn = document.getElementById('signupSubmitBtn');
+
+  const myProfileName = document.getElementById('myProfileName');
+  const myProfileCode = document.getElementById('myProfileCode');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const addFriendInput = document.getElementById('addFriendInput');
+  const addFriendBtn = document.getElementById('addFriendBtn');
+  const addFriendError = document.getElementById('addFriendError');
+  const friendList = document.getElementById('friendList');
+  const friendsEmptyState = document.getElementById('friendsEmptyState');
+  const incomingChallengeArea = document.getElementById('incomingChallengeArea');
+  const activeChallengeArea = document.getElementById('activeChallengeArea');
+
+  let fbApp = null, db = null;
+  let fbReady = false;
+  try{
+    if(FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('PASTE_')){
+      fbApp = firebase.initializeApp(FIREBASE_CONFIG);
+      db = firebase.firestore();
+      fbReady = true;
+    }
+  }catch(e){ console.error('Firebase init failed:', e); }
+
+  function showFirebaseNotConfiguredNotice(){
+    const existing = document.getElementById('fbSetupNotice');
+    if(existing) return;
+    const notice = document.createElement('div');
+    notice.id = 'fbSetupNotice';
+    notice.className = 'name-taken-box';
+    notice.style.maxWidth = '420px';
+    notice.style.margin = '0 auto 16px';
+    notice.textContent = "Friends & challenges need a Firebase project connected first. Open this file's script and fill in FIREBASE_CONFIG near the bottom (search for 'PASTE_YOUR') with your own free Firebase project's config, then reload.";
+    authArea.insertAdjacentElement('afterbegin', notice);
+  }
+  if(!fbReady) showFirebaseNotConfiguredNotice();
+
+  async function sha256Hex(text){
+    const enc = new TextEncoder().encode(text);
+    const digest = await crypto.subtle.digest('SHA-256', enc);
+    return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  function normName(s){ return (s||'').trim().replace(/\s+/g,' '); }
+  function slugName(s){ return normName(s).toLowerCase(); }
+
+  function friendCode(lastName, tag){ return `${normName(lastName)}#${tag}`; }
+  function docIdFor(lastName, tag){ return `${slugName(lastName)}_${tag}`; }
+
+  let currentUser = null; // {uid, firstName, lastName, tag, friends:[]}
+  let friendsUnsub = null;
+  let incomingUnsub = null;
+  let activeChallengeUnsub = null;
+  let activeChallengeId = null;
+  let heartbeatTimer = null;
+
+  function authTab(which){
+    authTabLogin.classList.toggle('active', which==='login');
+    authTabSignup.classList.toggle('active', which==='signup');
+    loginForm.style.display = which==='login' ? 'block' : 'none';
+    signupForm.style.display = which==='signup' ? 'block' : 'none';
+    loginError.textContent = '';
+    signupError.textContent = '';
+  }
+  authTabLogin.addEventListener('click', ()=> authTab('login'));
+  authTabSignup.addEventListener('click', ()=> authTab('signup'));
+
+  let signupNameTaken = false;
+  async function checkSignupNameAvailability(){
+    if(!fbReady) return;
+    const first = normName(signupFirstName.value);
+    const last = normName(signupLastName.value);
+    signupTakenBox.style.display = 'none';
+    signupTagRow.style.display = 'none';
+    signupNameTaken = false;
+    if(!first || !last) return;
+
+    try{
+      const snap = await db.collection('users')
+        .where('firstNameLower', '==', first.toLowerCase())
+        .where('lastNameLower', '==', last.toLowerCase())
+        .limit(1).get();
+      if(!snap.empty){
+        signupNameTaken = true;
+        signupTakenBox.style.display = 'block';
+        signupTakenBox.textContent = `Someone's already signed up as "${first} ${last}". Pick a tag number (1000–9999) so you two can tell your accounts apart — this becomes part of your friend code.`;
+        signupTagRow.style.display = 'flex';
+      }
+    }catch(e){ console.error(e); }
+  }
+  signupFirstName.addEventListener('blur', checkSignupNameAvailability);
+  signupLastName.addEventListener('blur', checkSignupNameAvailability);
+
+  function randTag(){ return String(1000 + Math.floor(Math.random()*9000)); }
+
+  signupSubmitBtn.addEventListener('click', async ()=>{
+    signupError.textContent = '';
+    if(!fbReady){ signupError.textContent = 'Friends system is not set up yet — see the Friends tab for setup instructions.'; return; }
+
+    const first = normName(signupFirstName.value);
+    const last = normName(signupLastName.value);
+    const password = signupPassword.value;
+    let tag = normName(signupTag.value);
+
+    if(!first || !last){ signupError.textContent = 'Enter your first and last name.'; return; }
+    if(!password || password.length < 4){ signupError.textContent = 'Password must be at least 4 characters.'; return; }
+
+    await checkSignupNameAvailability();
+
+    if(signupNameTaken){
+      if(!/^\d{4}$/.test(tag)){
+        signupError.textContent = 'Pick a 4-digit tag number (1000–9999) to make your account unique.';
+        return;
+      }
+    } else if(!tag){
+      tag = randTag();
+    }
+
+    signupSubmitBtn.disabled = true;
+    try{
+      const uid = docIdFor(last, tag);
+      const ref = db.collection('users').doc(uid);
+      const existing = await ref.get();
+      if(existing.exists){
+        signupError.textContent = `${friendCode(last, tag)} is already taken — try a different tag number.`;
+        signupSubmitBtn.disabled = false;
+        return;
+      }
+      const passwordHash = await sha256Hex(password);
+      await ref.set({
+        firstName: first,
+        lastName: last,
+        firstNameLower: first.toLowerCase(),
+        lastNameLower: last.toLowerCase(),
+        tag,
+        passwordHash,
+        friends: [],
+        lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      loginSession(uid, { firstName: first, lastName: last, tag, friends: [] });
+    }catch(e){
+      console.error(e);
+      signupError.textContent = 'Something went wrong creating your account. Try again.';
+    }
+    signupSubmitBtn.disabled = false;
+  });
+
+  loginSubmitBtn.addEventListener('click', async ()=>{
+    loginError.textContent = '';
+    if(!fbReady){ loginError.textContent = 'Friends system is not set up yet — see the Friends tab for setup instructions.'; return; }
+
+    const first = normName(loginFirstName.value);
+    const last = normName(loginLastName.value);
+    const tagInput = normName(loginTag.value);
+    const password = loginPassword.value;
+    if(!first || !last || !password){ loginError.textContent = 'Fill in your name and password.'; return; }
+
+    loginSubmitBtn.disabled = true;
+    try{
+      let userDoc = null, uid = null;
+      if(tagInput){
+        uid = docIdFor(last, tagInput);
+        const snap = await db.collection('users').doc(uid).get();
+        if(snap.exists) userDoc = snap.data();
+      } else {
+        const snap = await db.collection('users')
+          .where('firstNameLower', '==', first.toLowerCase())
+          .where('lastNameLower', '==', last.toLowerCase())
+          .limit(2).get();
+        if(snap.size > 1){
+          loginError.textContent = 'Multiple accounts share that name — enter your tag number too (shown on your friend code).';
+          loginSubmitBtn.disabled = false;
+          return;
+        }
+        if(!snap.empty){ userDoc = snap.docs[0].data(); uid = snap.docs[0].id; }
+      }
+
+      if(!userDoc){ loginError.textContent = "No account found with that name/tag."; loginSubmitBtn.disabled = false; return; }
+      if(userDoc.firstNameLower !== first.toLowerCase()){ loginError.textContent = "No account found with that name/tag."; loginSubmitBtn.disabled = false; return; }
+
+      const hash = await sha256Hex(password);
+      if(hash !== userDoc.passwordHash){
+        loginError.textContent = 'Incorrect password.';
+        loginSubmitBtn.disabled = false;
+        return;
+      }
+
+      loginSession(uid, userDoc);
+    }catch(e){
+      console.error(e);
+      loginError.textContent = 'Something went wrong logging in. Try again.';
+    }
+    loginSubmitBtn.disabled = false;
+  });
+
+  function loginSession(uid, userDoc){
+    currentUser = {
+      uid,
+      firstName: userDoc.firstName,
+      lastName: userDoc.lastName,
+      tag: userDoc.tag,
+      friends: userDoc.friends || []
+    };
+    try{ localStorage.setItem('mj_session_uid', uid); }catch(e){}
+    enterFriendsArea();
+  }
+
+  function enterFriendsArea(){
+    authArea.style.display = 'none';
+    friendsArea.style.display = 'block';
+    myProfileName.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+    myProfileCode.textContent = friendCode(currentUser.lastName, currentUser.tag);
+
+    startHeartbeat();
+    listenToFriends();
+    listenToIncomingChallenges();
+  }
+
+  function startHeartbeat(){
+    stopHeartbeat();
+    const beat = ()=>{
+      if(!currentUser || !db) return;
+      db.collection('users').doc(currentUser.uid).update({
+        lastActive: firebase.firestore.FieldValue.serverTimestamp()
+      }).catch(()=>{});
+    };
+    beat();
+    heartbeatTimer = setInterval(beat, 20000);
+    window.addEventListener('beforeunload', beat);
+  }
+  function stopHeartbeat(){
+    if(heartbeatTimer){ clearInterval(heartbeatTimer); heartbeatTimer = null; }
+  }
+
+  function isOnline(lastActiveTs){
+    if(!lastActiveTs || !lastActiveTs.toMillis) return false;
+    return (Date.now() - lastActiveTs.toMillis()) < 45000;
+  }
+
+  function listenToFriends(){
+    if(friendsUnsub) friendsUnsub();
+    friendsUnsub = db.collection('users').doc(currentUser.uid)
+      .onSnapshot(async (docSnap)=>{
+        if(!docSnap.exists) return;
+        const data = docSnap.data();
+        currentUser.friends = data.friends || [];
+        await renderFriendList();
+      });
+  }
+
+  async function renderFriendList(){
+    friendList.innerHTML = '';
+    const friendUids = currentUser.friends || [];
+    friendsEmptyState.style.display = friendUids.length ? 'none' : 'block';
+    if(!friendUids.length) return;
+
+    const chunks = [];
+    for(let i=0;i<friendUids.length;i+=10) chunks.push(friendUids.slice(i,i+10));
+
+    let friendDocs = [];
+    for(const chunk of chunks){
+      const snap = await db.collection('users').where(firebase.firestore.FieldPath.documentId(), 'in', chunk).get();
+      snap.forEach(d => friendDocs.push({ id: d.id, ...d.data() }));
+    }
+
+    friendDocs.forEach(f=>{
+      const online = isOnline(f.lastActive);
+      const row = document.createElement('div');
+      row.className = 'friend-row';
+      row.innerHTML = `
+        <div class="friend-info">
+          <span class="friend-status-dot ${online ? 'online' : ''}"></span>
+          <div>
+            <div class="friend-name">${f.firstName} ${f.lastName}</div>
+            <div class="friend-code">${friendCode(f.lastName, f.tag)} · ${online ? 'Online' : 'Offline'}</div>
+          </div>
+        </div>
+        <div class="friend-actions">
+          <button class="btn-challenge" data-uid="${f.id}" ${online ? '' : 'disabled'}>Challenge</button>
+          <button class="btn-remove" data-uid="${f.id}">Remove</button>
+        </div>
+      `;
+      row.querySelector('.btn-challenge').addEventListener('click', ()=> sendChallenge(f.id, `${f.firstName} ${f.lastName}`));
+      row.querySelector('.btn-remove').addEventListener('click', ()=> removeFriend(f.id));
+      friendList.appendChild(row);
+    });
+  }
+
+  addFriendBtn.addEventListener('click', async ()=>{
+    addFriendError.textContent = '';
+    const raw = normName(addFriendInput.value);
+    const m = raw.match(/^(.+?)#(\d{3,4})$/);
+    if(!m){ addFriendError.textContent = 'Use the format Lastname#1234.'; return; }
+    const [, last, tag] = m;
+    const targetId = docIdFor(last, tag);
+    if(targetId === currentUser.uid){ addFriendError.textContent = "That's your own code."; return; }
+
+    try{
+      const snap = await db.collection('users').doc(targetId).get();
+      if(!snap.exists){ addFriendError.textContent = 'No account found with that friend code.'; return; }
+      if((currentUser.friends||[]).includes(targetId)){ addFriendError.textContent = "You're already friends."; return; }
+
+      await db.collection('users').doc(currentUser.uid).update({
+        friends: firebase.firestore.FieldValue.arrayUnion(targetId)
+      });
+      await db.collection('users').doc(targetId).update({
+        friends: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+      });
+      addFriendInput.value = '';
+      SFX.click();
+    }catch(e){
+      console.error(e);
+      addFriendError.textContent = 'Could not add friend — try again.';
+    }
+  });
+
+  async function removeFriend(targetId){
+    try{
+      await db.collection('users').doc(currentUser.uid).update({
+        friends: firebase.firestore.FieldValue.arrayRemove(targetId)
+      });
+      await db.collection('users').doc(targetId).update({
+        friends: firebase.firestore.FieldValue.arrayRemove(currentUser.uid)
+      });
+    }catch(e){ console.error(e); }
+  }
+
+  logoutBtn.addEventListener('click', ()=>{
+    if(friendsUnsub) friendsUnsub();
+    if(incomingUnsub) incomingUnsub();
+    if(activeChallengeUnsub) activeChallengeUnsub();
+    stopHeartbeat();
+    currentUser = null;
+    activeChallengeId = null;
+    try{ localStorage.removeItem('mj_session_uid'); }catch(e){}
+    friendsArea.style.display = 'none';
+    authArea.style.display = 'block';
+    incomingChallengeArea.innerHTML = '';
+    activeChallengeArea.innerHTML = '';
+  });
+
+  // ---- Challenges ----
+  async function sendChallenge(toUid, toName){
+    if(!currentUser) return;
+    const move = moveSelect.value;
+    try{
+      const ref = await db.collection('challenges').add({
+        fromUid: currentUser.uid,
+        fromName: `${currentUser.firstName} ${currentUser.lastName}`,
+        toUid,
+        toName,
+        move,
+        status: 'pending',
+        scores: {},
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      watchChallenge(ref.id, true);
+    }catch(e){ console.error(e); }
+  }
+
+  function listenToIncomingChallenges(){
+    if(incomingUnsub) incomingUnsub();
+    incomingUnsub = db.collection('challenges')
+      .where('toUid', '==', currentUser.uid)
+      .where('status', '==', 'pending')
+      .onSnapshot(snap=>{
+        incomingChallengeArea.innerHTML = '';
+        snap.forEach(d=>{
+          const c = d.data();
+          const banner = document.createElement('div');
+          banner.className = 'challenge-banner';
+          banner.innerHTML = `
+            <div class="cb-title">⚔️ 1v1 Challenge</div>
+            <p><strong>${c.fromName}</strong> challenged you to <strong>${MOVE_LABELS[c.move] || c.move}</strong>.</p>
+            <div class="cb-actions">
+              <button class="btn-primary" data-accept="${d.id}">Accept</button>
+              <button class="btn-ghost" data-decline="${d.id}">Decline</button>
+            </div>
+          `;
+          banner.querySelector('[data-accept]').addEventListener('click', ()=> acceptChallenge(d.id, c.move));
+          banner.querySelector('[data-decline]').addEventListener('click', ()=> declineChallenge(d.id));
+          incomingChallengeArea.appendChild(banner);
+        });
+      });
+  }
+
+  async function acceptChallenge(challengeId, move){
+    await db.collection('challenges').doc(challengeId).update({ status: 'active' });
+    moveSelect.value = move;
+    updateRecordBtnLabel();
+    showPanel('stage');
+    watchChallenge(challengeId, true);
+  }
+
+  async function declineChallenge(challengeId){
+    await db.collection('challenges').doc(challengeId).update({ status: 'declined' });
+  }
+
+  function watchChallenge(challengeId, isParticipant){
+    if(activeChallengeUnsub) activeChallengeUnsub();
+    activeChallengeId = challengeId;
+    activeChallengeUnsub = db.collection('challenges').doc(challengeId).onSnapshot(docSnap=>{
+      if(!docSnap.exists) return;
+      const c = docSnap.data();
+      renderActiveChallenge(challengeId, c);
+      if(c.status === 'done' || c.status === 'declined'){
+        activeChallengeId = null;
+      }
+    });
+  }
+
+  function renderActiveChallenge(challengeId, c){
+    if(c.status === 'declined'){
+      activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">Declined</div><p>${c.toName} declined the challenge.</p></div>`;
+      setTimeout(()=>{ activeChallengeArea.innerHTML=''; }, 4000);
+      return;
+    }
+    if(c.status === 'pending'){
+      activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">Waiting…</div><p>Waiting for ${c.toName} to accept your ${MOVE_LABELS[c.move]||c.move} challenge.</p></div>`;
+      return;
+    }
+
+    const fromScore = c.scores && c.scores[c.fromUid];
+    const toScore = c.scores && c.scores[c.toUid];
+    const meScore = c.scores && c.scores[currentUser.uid];
+
+    if(c.status === 'active'){
+      let msg = meScore != null
+        ? `You scored <strong style="color:var(--gold);">${meScore.toFixed(1)}</strong>. Waiting for ${c.fromUid===currentUser.uid?c.toName:c.fromName} to record their take.`
+        : `Record your <strong>${MOVE_LABELS[c.move]||c.move}</strong> take now on the Stage tab to submit your challenge score.`;
+      activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">⚔️ ${MOVE_LABELS[c.move]||c.move} Challenge</div><p>${msg}</p></div>`;
+      return;
+    }
+
+    if(c.status === 'done'){
+      const winnerUid = fromScore > toScore ? c.fromUid : (toScore > fromScore ? c.toUid : null);
+      const winnerName = winnerUid === c.fromUid ? c.fromName : (winnerUid === c.toUid ? c.toName : 'Tie');
+      activeChallengeArea.innerHTML = `
+        <div class="challenge-banner">
+          <div class="cb-title">🏆 Result</div>
+          <div class="vs-row">
+            <div class="vs-player"><div class="vs-name">${c.fromName}</div><div class="vs-score">${(fromScore||0).toFixed(1)}</div></div>
+            <div class="vs-divider">VS</div>
+            <div class="vs-player"><div class="vs-name">${c.toName}</div><div class="vs-score">${(toScore||0).toFixed(1)}</div></div>
+          </div>
+          <p>${winnerUid ? `${winnerName} wins!` : "It's a tie!"}</p>
+          <div class="cb-actions"><button class="btn-ghost" id="dismissChallengeBtn">Dismiss</button></div>
+        </div>
+      `;
+      const dismissBtn = document.getElementById('dismissChallengeBtn');
+      if(dismissBtn) dismissBtn.addEventListener('click', ()=>{ activeChallengeArea.innerHTML=''; });
+      if(fromScore > 0 && toScore > 0) playScoreSfx(Math.max(fromScore, toScore));
+    }
+  }
+
+  async function submitChallengeScore(challengeId, score){
+    try{
+      const ref = db.collection('challenges').doc(challengeId);
+      await db.runTransaction(async (tx)=>{
+        const snap = await tx.get(ref);
+        if(!snap.exists) return;
+        const c = snap.data();
+        if(c.status !== 'active') return;
+        const scores = { ...(c.scores||{}), [currentUser.uid]: score };
+        const bothIn = scores[c.fromUid] != null && scores[c.toUid] != null;
+        tx.update(ref, { scores, status: bothIn ? 'done' : 'active' });
+      });
+    }catch(e){ console.error(e); }
+  }
+
+  // Restore session if this browser was previously logged in.
+  (async function restoreSession(){
+    if(!fbReady) return;
+    let uid = null;
+    try{ uid = localStorage.getItem('mj_session_uid'); }catch(e){}
+    if(!uid) return;
+    try{
+      const snap = await db.collection('users').doc(uid).get();
+      if(snap.exists){
+        const data = snap.data();
+        currentUser = { uid, firstName: data.firstName, lastName: data.lastName, tag: data.tag, friends: data.friends || [] };
+        enterFriendsArea();
+      }
+    }catch(e){ console.error(e); }
+  })();
+
+})();
+</script>
+
+</body>
+</html>
