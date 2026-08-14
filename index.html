@@ -3468,7 +3468,9 @@
     activeChallengeArea.innerHTML = '';
   });
 
-  // ---- Challenges ----
+  // ---- Challenges (best of 3 rounds) ----
+  const CHALLENGE_TOTAL_ROUNDS = 3;
+
   async function sendChallenge(toUid, toName){
     if(!currentUser) return;
     const move = moveSelect.value;
@@ -3480,7 +3482,10 @@
         toName,
         move,
         status: 'pending',
-        scores: {},
+        totalRounds: CHALLENGE_TOTAL_ROUNDS,
+        round: 1,
+        roundsData: Array.from({length: CHALLENGE_TOTAL_ROUNDS}, () => ({ scores: {}, winnerUid: null })),
+        wins: {},
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       watchChallenge(ref.id, true);
@@ -3538,6 +3543,17 @@
     });
   }
 
+  function roundRow(label, mine, theirs, isCurrent){
+    const played = mine != null && theirs != null;
+    const mineTxt = mine != null ? mine.toFixed(1) : '—';
+    const theirsTxt = theirs != null ? theirs.toFixed(1) : '—';
+    const outcome = played ? (mine > theirs ? '✓' : (mine < theirs ? '✗' : '·')) : (isCurrent ? '▶' : '');
+    return `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 10px; background:var(--panel-tint); border-radius:8px; font-size:12px;">
+      <span>${label}</span>
+      <span style="color:var(--sub-text);">${mineTxt} <span style="color:var(--faint-text);">–</span> ${theirsTxt} <span style="margin-left:6px; color:var(--gold);">${outcome}</span></span>
+    </div>`;
+  }
+
   function renderActiveChallenge(challengeId, c){
     if(c.status === 'declined'){
       activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">Declined</div><p>${c.toName} declined the challenge.</p></div>`;
@@ -3545,40 +3561,63 @@
       return;
     }
     if(c.status === 'pending'){
-      activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">Waiting…</div><p>Waiting for ${c.toName} to accept your ${MOVE_LABELS[c.move]||c.move} challenge.</p></div>`;
+      activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">Waiting…</div><p>Waiting for ${c.toName} to accept your best-of-${c.totalRounds||3} ${MOVE_LABELS[c.move]||c.move} challenge.</p></div>`;
       return;
     }
 
-    const fromScore = c.scores && c.scores[c.fromUid];
-    const toScore = c.scores && c.scores[c.toUid];
-    const meScore = c.scores && c.scores[currentUser.uid];
+    const totalRounds = c.totalRounds || CHALLENGE_TOTAL_ROUNDS;
+    const roundsData = c.roundsData || [];
+    const wins = c.wins || {};
+    const meUid = currentUser.uid;
+    const oppUid = meUid === c.fromUid ? c.toUid : c.fromUid;
+    const oppName = meUid === c.fromUid ? c.toName : c.fromName;
+    const myWins = wins[meUid] || 0;
+    const oppWins = wins[oppUid] || 0;
+
+    const roundsHtml = roundsData.map((r,i)=>{
+      const mine = r.scores ? r.scores[meUid] : null;
+      const theirs = r.scores ? r.scores[oppUid] : null;
+      return roundRow(`Round ${i+1}`, mine, theirs, (c.round-1)===i && c.status==='active');
+    }).join('');
 
     if(c.status === 'active'){
-      let msg = meScore != null
-        ? `You scored <strong style="color:var(--gold);">${meScore.toFixed(1)}</strong>. Waiting for ${c.fromUid===currentUser.uid?c.toName:c.fromName} to record their take.`
-        : `Record your <strong>${MOVE_LABELS[c.move]||c.move}</strong> take now on the Stage tab to submit your challenge score.`;
-      activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">⚔️ ${MOVE_LABELS[c.move]||c.move} Challenge</div><p>${msg}</p></div>`;
+      const curRoundData = roundsData[c.round-1] || {scores:{}};
+      const myScoreThisRound = curRoundData.scores ? curRoundData.scores[meUid] : null;
+      const waitingOnOpp = myScoreThisRound != null;
+      const msg = waitingOnOpp
+        ? `Round ${c.round} recorded — waiting for ${oppName}.`
+        : `Round ${c.round} of ${totalRounds}: record your <strong>${MOVE_LABELS[c.move]||c.move}</strong> take now on the Stage tab.`;
+      activeChallengeArea.innerHTML = `
+        <div class="challenge-banner">
+          <div class="cb-title">⚔️ Best of ${totalRounds}: ${MOVE_LABELS[c.move]||c.move}</div>
+          <p>You ${myWins} – ${oppWins} ${oppName}</p>
+          <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;">${roundsHtml}</div>
+          <p>${msg}</p>
+        </div>
+      `;
       return;
     }
 
     if(c.status === 'done'){
-      const winnerUid = fromScore > toScore ? c.fromUid : (toScore > fromScore ? c.toUid : null);
-      const winnerName = winnerUid === c.fromUid ? c.fromName : (winnerUid === c.toUid ? c.toName : 'Tie');
+      const overallWinnerUid = myWins === oppWins ? null : (myWins > oppWins ? meUid : oppUid);
+      const overallWinnerName = overallWinnerUid === null ? null : (overallWinnerUid === meUid ? 'You' : oppName);
       activeChallengeArea.innerHTML = `
         <div class="challenge-banner">
-          <div class="cb-title">🏆 Result</div>
+          <div class="cb-title">🏆 Match Result</div>
           <div class="vs-row">
-            <div class="vs-player"><div class="vs-name">${c.fromName}</div><div class="vs-score">${(fromScore||0).toFixed(1)}</div></div>
+            <div class="vs-player"><div class="vs-name">You</div><div class="vs-score">${myWins}</div></div>
             <div class="vs-divider">VS</div>
-            <div class="vs-player"><div class="vs-name">${c.toName}</div><div class="vs-score">${(toScore||0).toFixed(1)}</div></div>
+            <div class="vs-player"><div class="vs-name">${oppName}</div><div class="vs-score">${oppWins}</div></div>
           </div>
-          <p>${winnerUid ? `${winnerName} wins!` : "It's a tie!"}</p>
+          <div style="display:flex; flex-direction:column; gap:6px; margin:12px 0;">${roundsHtml}</div>
+          <p>${overallWinnerName ? `${overallWinnerName} win${overallWinnerName==='You'?'':'s'} the match ${Math.max(myWins,oppWins)}-${Math.min(myWins,oppWins)}!` : "It's a tie match!"}</p>
           <div class="cb-actions"><button class="btn-ghost" id="dismissChallengeBtn">Dismiss</button></div>
         </div>
       `;
       const dismissBtn = document.getElementById('dismissChallengeBtn');
       if(dismissBtn) dismissBtn.addEventListener('click', ()=>{ activeChallengeArea.innerHTML=''; });
-      if(fromScore > 0 && toScore > 0) playScoreSfx(Math.max(fromScore, toScore));
+      if(overallWinnerUid === meUid) SFX.newBest();
+      else if(overallWinnerUid) playScoreSfx(4);
     }
   }
 
@@ -3590,9 +3629,35 @@
         if(!snap.exists) return;
         const c = snap.data();
         if(c.status !== 'active') return;
-        const scores = { ...(c.scores||{}), [currentUser.uid]: score };
-        const bothIn = scores[c.fromUid] != null && scores[c.toUid] != null;
-        tx.update(ref, { scores, status: bothIn ? 'done' : 'active' });
+
+        const totalRounds = c.totalRounds || CHALLENGE_TOTAL_ROUNDS;
+        const roundsData = (c.roundsData || []).map(r => ({ scores: { ...(r.scores||{}) }, winnerUid: r.winnerUid || null }));
+        const roundIdx = c.round - 1;
+        if(!roundsData[roundIdx]) return;
+
+        roundsData[roundIdx].scores[currentUser.uid] = score;
+        const rScores = roundsData[roundIdx].scores;
+        const bothIn = rScores[c.fromUid] != null && rScores[c.toUid] != null;
+
+        const wins = { ...(c.wins||{}) };
+        let nextRound = c.round;
+        let status = 'active';
+
+        if(bothIn && roundsData[roundIdx].winnerUid == null){
+          const fromS = rScores[c.fromUid], toS = rScores[c.toUid];
+          const roundWinner = fromS > toS ? c.fromUid : (toS > fromS ? c.toUid : 'tie');
+          roundsData[roundIdx].winnerUid = roundWinner;
+          if(roundWinner !== 'tie'){
+            wins[roundWinner] = (wins[roundWinner] || 0) + 1;
+          }
+          if(c.round < totalRounds){
+            nextRound = c.round + 1;
+          } else {
+            status = 'done';
+          }
+        }
+
+        tx.update(ref, { roundsData, wins, round: nextRound, status });
       });
     }catch(e){ console.error(e); }
   }
