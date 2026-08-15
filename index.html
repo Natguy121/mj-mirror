@@ -831,6 +831,24 @@
   .btn-challenge:disabled{ opacity:0.35; cursor:not-allowed; }
   .btn-remove{ background:transparent; border:1px solid var(--line); color:var(--faint-text); }
 
+  .match-type-btn.active, .move-mode-btn.active{ background:var(--azure); color:#08131c; border-color:var(--azure); }
+  .match-checklist-row{
+    display:flex; align-items:center; gap:10px;
+    background:var(--panel-tint); border:1px solid var(--line); border-radius:10px;
+    padding:8px 12px; font-size:12.5px; cursor:pointer;
+  }
+  .match-checklist-row input{ accent-color:var(--azure); width:16px; height:16px; }
+  .team-assign-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--panel-tint); border:1px solid var(--line); border-radius:10px;
+    padding:8px 12px; font-size:12.5px; cursor:pointer;
+  }
+  .team-assign-row .team-tag{
+    font-size:10.5px; letter-spacing:0.04em; padding:3px 9px; border-radius:6px;
+    background:rgba(74,155,232,0.18); color:var(--azure);
+  }
+  .team-assign-row .team-tag.teamB{ background:rgba(232,87,143,0.18); color:var(--pink); }
+
   .challenge-banner{
     width:100%;
     max-width:420px;
@@ -1414,6 +1432,39 @@
 
     <div class="friend-list" id="friendList"></div>
     <div class="field-hint" id="friendsEmptyState" style="text-align:center; margin-top:14px;">No friends yet — add one using their friend code above.</div>
+
+    <div class="auth-card" id="matchBuilderCard" style="margin-top:20px;">
+      <div class="move-name" style="color:var(--azure);">START A MATCH</div>
+      <div class="field-hint" style="margin-bottom:12px;">Check off any online friends, pick a mode, then send invites. Works for 1v1, free-for-all with more people, or teams like 2v2.</div>
+
+      <div id="matchFriendChecklist" style="display:flex; flex-direction:column; gap:6px; margin-bottom:14px;"></div>
+      <div class="field-hint" id="matchChecklistEmpty">No friends online right now.</div>
+
+      <div class="field-row">
+        <label>Match Type</label>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn-ghost match-type-btn active" data-type="ffa" style="flex:1; font-size:12px; padding:8px;">1v1 / Free-for-all</button>
+          <button type="button" class="btn-ghost match-type-btn" data-type="teams" style="flex:1; font-size:12px; padding:8px;">Teams (2v2, etc)</button>
+        </div>
+      </div>
+
+      <div id="teamAssignArea" style="display:none; margin:6px 0 12px;">
+        <label style="font-size:11px; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted-text); display:block; margin-bottom:6px;">Tap a name to switch it between Team A and Team B</label>
+        <div id="teamAssignList" style="display:flex; flex-direction:column; gap:6px;"></div>
+      </div>
+
+      <div class="field-row">
+        <label>Move Mode</label>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn-ghost move-mode-btn active" data-mode="single" style="flex:1; font-size:12px; padding:8px;">Single Move</button>
+          <button type="button" class="btn-ghost move-mode-btn" data-mode="combo" style="flex:1; font-size:12px; padding:8px;">Combo</button>
+        </div>
+      </div>
+      <div class="field-hint" id="matchMoveHint">Best of 3 rounds of whatever move is selected on the Stage tab.</div>
+
+      <button class="btn-primary" id="sendMatchBtn" style="width:100%; margin-top:12px;">Send Match Invite</button>
+      <div class="field-error" id="matchBuilderError"></div>
+    </div>
   </div>
 </div>
 
@@ -2280,14 +2331,20 @@
       scoreLog.push({move: 'combo', score: finalScore, t: Date.now()});
       try{ localStorage.setItem('mj_scores', JSON.stringify(scoreLog)); }catch(e){}
       renderHistory();
+
+      if(activeChallengeId){
+        submitChallengeScore(activeChallengeId, finalScore);
+      }
     }
 
     comboRunning = false;
     comboRecordBtn.disabled = !cameraOn;
-    comboSelects.forEach(sel => sel.disabled = false);
-    comboCountMinus.disabled = comboCount <= COMBO_MIN;
-    comboCountPlus.disabled = comboCount >= COMBO_MAX;
-    comboCountInput.disabled = false;
+    if(!activeChallengeId){
+      comboSelects.forEach(sel => sel.disabled = false);
+      comboCountMinus.disabled = comboCount <= COMBO_MIN;
+      comboCountPlus.disabled = comboCount >= COMBO_MAX;
+      comboCountInput.disabled = false;
+    }
     comboStepBadge.textContent = 'Ready';
     resumeMusicIfPending();
   });
@@ -3403,7 +3460,7 @@
     friendList.innerHTML = '';
     const friendUids = currentUser.friends || [];
     friendsEmptyState.style.display = friendUids.length ? 'none' : 'block';
-    if(!friendUids.length) return;
+    if(!friendUids.length){ renderMatchChecklist([]); return; }
 
     const chunks = [];
     for(let i=0;i<friendUids.length;i+=10) chunks.push(friendUids.slice(i,i+10));
@@ -3431,10 +3488,12 @@
           <button class="btn-remove" data-uid="${f.id}">Remove</button>
         </div>
       `;
-      row.querySelector('.btn-challenge').addEventListener('click', ()=> sendChallenge(f.id, `${f.firstName} ${f.lastName}`));
+      row.querySelector('.btn-challenge').addEventListener('click', ()=> quickChallenge(f.id, `${f.firstName} ${f.lastName}`));
       row.querySelector('.btn-remove').addEventListener('click', ()=> removeFriend(f.id));
       friendList.appendChild(row);
     });
+
+    renderMatchChecklist(friendDocs);
   }
 
   addFriendBtn.addEventListener('click', async ()=>{
@@ -3490,136 +3549,329 @@
     activeChallengeArea.innerHTML = '';
   });
 
-  // ---- Challenges (best of 3 rounds) ----
-  const CHALLENGE_TOTAL_ROUNDS = 3;
+  // ---- Matches: 1v1, free-for-all with more people, and teams (2v2, etc) ----
+  const SINGLE_MOVE_ROUNDS = 3;   // best-of-3 for single-move matches
+  const COMBO_MATCH_ROUNDS = 1;   // one full combo run per match
 
-  async function sendChallenge(toUid, toName){
-    if(!currentUser) return;
-    const move = moveSelect.value;
-    try{
-      const ref = await db.collection('challenges').add({
-        fromUid: currentUser.uid,
-        fromName: `${currentUser.firstName} ${currentUser.lastName}`,
-        toUid,
-        toName,
-        move,
-        status: 'pending',
-        totalRounds: CHALLENGE_TOTAL_ROUNDS,
-        round: 1,
-        roundsData: Array.from({length: CHALLENGE_TOTAL_ROUNDS}, () => ({ scores: {}, winnerUid: null })),
-        wins: {},
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  const matchBuilderCard = document.getElementById('matchBuilderCard');
+  const matchFriendChecklist = document.getElementById('matchFriendChecklist');
+  const matchChecklistEmpty = document.getElementById('matchChecklistEmpty');
+  const teamAssignArea = document.getElementById('teamAssignArea');
+  const teamAssignList = document.getElementById('teamAssignList');
+  const matchMoveHint = document.getElementById('matchMoveHint');
+  const sendMatchBtn = document.getElementById('sendMatchBtn');
+  const matchBuilderError = document.getElementById('matchBuilderError');
+
+  let friendNameCache = {};
+  let currentMatchType = 'ffa';
+  let currentMoveMode = 'single';
+  let matchTeamOf = {}; // uid -> 'A' | 'B', for the builder only
+
+  document.querySelectorAll('.match-type-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.match-type-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMatchType = btn.dataset.type;
+      teamAssignArea.style.display = currentMatchType === 'teams' ? 'block' : 'none';
+      renderTeamAssignList();
+    });
+  });
+
+  document.querySelectorAll('.move-mode-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.move-mode-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      currentMoveMode = btn.dataset.mode;
+      matchMoveHint.textContent = currentMoveMode === 'combo'
+        ? `One round using whatever moves are currently set up on the Combo tab (${comboSelects.length ? comboSelects.map(s=>MOVE_LABELS[s.value]).join(' → ') : 'set that up first'}).`
+        : `Best of ${SINGLE_MOVE_ROUNDS} rounds of whatever move is selected on the Stage tab (${MOVE_LABELS[moveSelect.value]}).`;
+    });
+  });
+
+  function getSelectedFriendUids(){
+    return [...matchFriendChecklist.querySelectorAll('input[type=checkbox]:checked')].map(cb => cb.dataset.uid);
+  }
+
+  function renderTeamAssignList(){
+    const selected = getSelectedFriendUids();
+    const all = [currentUser.uid, ...selected];
+    // default alternating assignment for anyone not already assigned
+    all.forEach((uid,i)=>{ if(!matchTeamOf[uid]) matchTeamOf[uid] = i % 2 === 0 ? 'A' : 'B'; });
+    Object.keys(matchTeamOf).forEach(uid=>{ if(!all.includes(uid)) delete matchTeamOf[uid]; });
+
+    teamAssignList.innerHTML = '';
+    all.forEach(uid=>{
+      const name = uid === currentUser.uid ? 'You' : (friendNameCache[uid] || 'Friend');
+      const row = document.createElement('div');
+      row.className = 'team-assign-row';
+      row.innerHTML = `<span>${name}</span><span class="team-tag ${matchTeamOf[uid]==='B'?'teamB':''}">Team ${matchTeamOf[uid]}</span>`;
+      row.addEventListener('click', ()=>{
+        matchTeamOf[uid] = matchTeamOf[uid] === 'A' ? 'B' : 'A';
+        renderTeamAssignList();
       });
-      watchChallenge(ref.id, true);
-    }catch(e){ console.error(e); }
+      teamAssignList.appendChild(row);
+    });
+  }
+
+  function renderMatchChecklist(friendDocs){
+    friendNameCache = {};
+    const online = friendDocs.filter(f => isOnline(f.lastActive));
+    matchFriendChecklist.innerHTML = '';
+    matchChecklistEmpty.style.display = online.length ? 'none' : 'block';
+
+    online.forEach(f=>{
+      friendNameCache[f.id] = `${f.firstName} ${f.lastName}`;
+      const label = document.createElement('label');
+      label.className = 'match-checklist-row';
+      label.innerHTML = `<input type="checkbox" data-uid="${f.id}"><span>${f.firstName} ${f.lastName} <span class="friend-code">${friendCode(f.lastName, f.tag)}</span></span>`;
+      label.querySelector('input').addEventListener('change', renderTeamAssignList);
+      matchFriendChecklist.appendChild(label);
+    });
+    if(currentMatchType === 'teams') renderTeamAssignList();
+  }
+
+  sendMatchBtn.addEventListener('click', async ()=>{
+    matchBuilderError.textContent = '';
+    const invitedUids = getSelectedFriendUids();
+    if(invitedUids.length === 0){ matchBuilderError.textContent = 'Check off at least one online friend to invite.'; return; }
+    if(currentMoveMode === 'combo' && comboSelects.length < 2){ matchBuilderError.textContent = 'Set up at least 2 moves on the Combo tab first.'; return; }
+
+    sendMatchBtn.disabled = true;
+    try{
+      await sendMatch({
+        invitedUids,
+        matchType: currentMatchType,
+        teamOf: currentMatchType === 'teams' ? { ...matchTeamOf } : null,
+        moveMode: currentMoveMode,
+        move: currentMoveMode === 'single' ? moveSelect.value : null,
+        comboMoves: currentMoveMode === 'combo' ? comboSelects.map(s=>s.value) : null
+      });
+      matchFriendChecklist.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+    }catch(e){
+      console.error(e);
+      matchBuilderError.textContent = 'Could not send the match invite — try again.';
+    }
+    sendMatchBtn.disabled = false;
+  });
+
+  async function sendMatch({invitedUids, matchType, teamOf, moveMode, move, comboMoves}){
+    if(!currentUser) return;
+    const names = { [currentUser.uid]: `${currentUser.firstName} ${currentUser.lastName}` };
+    invitedUids.forEach(uid=>{ names[uid] = friendNameCache[uid] || 'Friend'; });
+    const totalRounds = moveMode === 'combo' ? COMBO_MATCH_ROUNDS : SINGLE_MOVE_ROUNDS;
+
+    const ref = await db.collection('challenges').add({
+      hostUid: currentUser.uid,
+      hostName: names[currentUser.uid],
+      invited: invitedUids,
+      accepted: [currentUser.uid],
+      declined: [],
+      names,
+      matchType,
+      teamOf: matchType === 'teams' ? teamOf : null,
+      moveMode,
+      move: moveMode === 'single' ? move : null,
+      comboMoves: moveMode === 'combo' ? comboMoves : null,
+      status: 'pending',
+      totalRounds,
+      round: 1,
+      roundsData: Array.from({length: totalRounds}, () => ({ scores: {} })),
+      wins: {},
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    watchChallenge(ref.id);
+  }
+
+  async function quickChallenge(toUid, toName){
+    friendNameCache[toUid] = toName;
+    await sendMatch({
+      invitedUids: [toUid],
+      matchType: 'ffa',
+      teamOf: null,
+      moveMode: 'single',
+      move: moveSelect.value,
+      comboMoves: null
+    });
+  }
+
+  function matchLabel(c){
+    if(c.moveMode === 'combo') return `Combo (${(c.comboMoves||[]).map(m=>MOVE_LABELS[m]||m).join(' → ')})`;
+    return MOVE_LABELS[c.move] || c.move;
+  }
+  function modeLabel(c){
+    if(c.matchType === 'teams') return 'Teams';
+    return (c.invited||[]).length > 1 ? 'Free-for-all' : '1v1';
   }
 
   function listenToIncomingChallenges(){
     if(incomingUnsub) incomingUnsub();
     incomingUnsub = db.collection('challenges')
-      .where('toUid', '==', currentUser.uid)
-      .where('status', '==', 'pending')
+      .where('invited', 'array-contains', currentUser.uid)
       .onSnapshot(snap=>{
         incomingChallengeArea.innerHTML = '';
         snap.forEach(d=>{
           const c = d.data();
+          if(c.status !== 'pending') return;
+          if((c.accepted||[]).includes(currentUser.uid) || (c.declined||[]).includes(currentUser.uid)) return;
+
+          const extra = (c.invited||[]).length - 1;
           const banner = document.createElement('div');
           banner.className = 'challenge-banner';
           banner.innerHTML = `
-            <div class="cb-title">⚔️ 1v1 Challenge</div>
-            <p><strong>${c.fromName}</strong> challenged you to <strong>${MOVE_LABELS[c.move] || c.move}</strong>.</p>
+            <div class="cb-title">⚔️ ${modeLabel(c)} Match</div>
+            <p><strong>${c.hostName}</strong> invited you${extra>0?` and ${extra} other${extra>1?'s':''}`:''} to <strong>${matchLabel(c)}</strong>.</p>
             <div class="cb-actions">
               <button class="btn-primary" data-accept="${d.id}">Accept</button>
               <button class="btn-ghost" data-decline="${d.id}">Decline</button>
             </div>
           `;
-          banner.querySelector('[data-accept]').addEventListener('click', ()=> acceptChallenge(d.id, c.move));
-          banner.querySelector('[data-decline]').addEventListener('click', ()=> declineChallenge(d.id));
+          banner.querySelector('[data-accept]').addEventListener('click', ()=> respondToMatch(d.id, true));
+          banner.querySelector('[data-decline]').addEventListener('click', ()=> respondToMatch(d.id, false));
           incomingChallengeArea.appendChild(banner);
         });
       });
   }
 
-  async function acceptChallenge(challengeId, move){
-    await db.collection('challenges').doc(challengeId).update({ status: 'active' });
-    moveSelect.value = move;
-    updateRecordBtnLabel();
-    showPanel('stage');
-    watchChallenge(challengeId, true);
+  async function respondToMatch(challengeId, accept){
+    const ref = db.collection('challenges').doc(challengeId);
+    try{
+      await db.runTransaction(async (tx)=>{
+        const snap = await tx.get(ref);
+        if(!snap.exists) return;
+        const c = snap.data();
+        if(c.status !== 'pending') return;
+
+        const accepted = [...(c.accepted||[])];
+        const declined = [...(c.declined||[])];
+        if(accept){ if(!accepted.includes(currentUser.uid)) accepted.push(currentUser.uid); }
+        else { if(!declined.includes(currentUser.uid)) declined.push(currentUser.uid); }
+
+        const update = { accepted, declined };
+        const allResponded = (accepted.length + declined.length) >= ((c.invited||[]).length + 1);
+        if(allResponded){
+          if(accepted.length >= 2){
+            update.status = 'active';
+            update.participants = accepted;
+            update.round = 1;
+          } else {
+            update.status = 'cancelled';
+          }
+        }
+        tx.update(ref, update);
+      });
+    }catch(e){ console.error(e); }
+
+    if(accept) watchChallenge(challengeId);
   }
 
-  async function declineChallenge(challengeId){
-    await db.collection('challenges').doc(challengeId).update({ status: 'declined' });
-  }
-
-  function watchChallenge(challengeId, isParticipant){
+  function watchChallenge(challengeId){
     if(activeChallengeUnsub) activeChallengeUnsub();
     activeChallengeId = challengeId;
     activeChallengeUnsub = db.collection('challenges').doc(challengeId).onSnapshot(docSnap=>{
       if(!docSnap.exists) return;
       const c = docSnap.data();
       renderActiveChallenge(challengeId, c);
-      if(c.status === 'done' || c.status === 'declined'){
+      if(c.status === 'done' || c.status === 'cancelled'){
         activeChallengeId = null;
       }
     });
   }
 
-  function roundRow(label, mine, theirs, isCurrent){
-    const played = mine != null && theirs != null;
-    const mineTxt = mine != null ? mine.toFixed(1) : '—';
-    const theirsTxt = theirs != null ? theirs.toFixed(1) : '—';
-    let outcome = '', outcomeColor = 'var(--sky)';
-    if(played){
-      if(mine > theirs){ outcome = '✓'; outcomeColor = 'var(--mint)'; }
-      else if(mine < theirs){ outcome = '✗'; outcomeColor = 'var(--rubyred)'; }
-      else { outcome = '·'; outcomeColor = 'var(--champagne)'; }
-    } else if(isCurrent){
-      outcome = '▶';
+  const enteredActiveMatches = new Set();
+  function enterActiveMatchUI(challengeId, c){
+    if(enteredActiveMatches.has(challengeId)) return;
+    enteredActiveMatches.add(challengeId);
+
+    if(c.moveMode === 'combo'){
+      const moves = c.comboMoves || [];
+      comboCount = moves.length;
+      renderComboSelects();
+      comboSelects.forEach((sel,i)=>{ if(moves[i]) sel.value = moves[i]; sel.disabled = true; });
+      comboCountMinus.disabled = true;
+      comboCountPlus.disabled = true;
+      comboCountInput.disabled = true;
+      showPanel('combo');
+      comboCamNotice.style.display = cameraOn ? 'none' : 'block';
+    } else {
+      moveSelect.value = c.move;
+      updateRecordBtnLabel();
+      showPanel('stage');
     }
-    return `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 10px; background:var(--panel-tint); border-radius:8px; font-size:12px;">
-      <span>${label}</span>
-      <span style="color:var(--sub-text);">${mineTxt} <span style="color:var(--faint-text);">–</span> ${theirsTxt} <span style="margin-left:6px; color:${outcomeColor};">${outcome}</span></span>
-    </div>`;
+  }
+
+  function exitActiveMatchUI(challengeId, c){
+    enteredActiveMatches.delete(challengeId);
+    if(c.moveMode === 'combo'){
+      comboSelects.forEach(sel => sel.disabled = false);
+      comboCountMinus.disabled = comboCount <= COMBO_MIN;
+      comboCountPlus.disabled = comboCount >= COMBO_MAX;
+      comboCountInput.disabled = false;
+    }
   }
 
   function renderActiveChallenge(challengeId, c){
-    if(c.status === 'declined'){
-      activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">Declined</div><p>${c.toName} declined the challenge.</p></div>`;
+    const meUid = currentUser.uid;
+
+    if(c.status === 'cancelled'){
+      activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">Match Cancelled</div><p>Not enough players joined.</p></div>`;
       setTimeout(()=>{ activeChallengeArea.innerHTML=''; }, 4000);
       return;
     }
+
     if(c.status === 'pending'){
-      activeChallengeArea.innerHTML = `<div class="challenge-banner"><div class="cb-title">Waiting…</div><p>Waiting for ${c.toName} to accept your best-of-${c.totalRounds||3} ${MOVE_LABELS[c.move]||c.move} challenge.</p></div>`;
+      const respondedNames = (c.accepted||[]).map(u => u===meUid ? 'You' : (c.names?.[u]||'Someone'));
+      const waitingNames = (c.invited||[]).filter(u => !(c.accepted||[]).includes(u) && !(c.declined||[]).includes(u)).map(u=>c.names?.[u]||'Someone');
+      activeChallengeArea.innerHTML = `
+        <div class="challenge-banner">
+          <div class="cb-title">⚔️ Waiting for players…</div>
+          <p>In: ${respondedNames.join(', ') || '—'}</p>
+          <p>${waitingNames.length ? `Waiting on: ${waitingNames.join(', ')}` : 'Everyone has responded.'}</p>
+        </div>
+      `;
       return;
     }
 
-    const totalRounds = c.totalRounds || CHALLENGE_TOTAL_ROUNDS;
-    const roundsData = c.roundsData || [];
-    const wins = c.wins || {};
-    const meUid = currentUser.uid;
-    const oppUid = meUid === c.fromUid ? c.toUid : c.fromUid;
-    const oppName = meUid === c.fromUid ? c.toName : c.fromName;
-    const myWins = wins[meUid] || 0;
-    const oppWins = wins[oppUid] || 0;
-
-    const roundsHtml = roundsData.map((r,i)=>{
-      const mine = r.scores ? r.scores[meUid] : null;
-      const theirs = r.scores ? r.scores[oppUid] : null;
-      return roundRow(`Round ${i+1}`, mine, theirs, (c.round-1)===i && c.status==='active');
-    }).join('');
+    const participants = c.participants || c.accepted || [];
+    if(!participants.includes(meUid)){
+      activeChallengeArea.innerHTML = '';
+      return;
+    }
 
     if(c.status === 'active'){
+      enterActiveMatchUI(challengeId, c);
+
+      const totalRounds = c.totalRounds || 1;
+      const roundsData = c.roundsData || [];
       const curRoundData = roundsData[c.round-1] || {scores:{}};
       const myScoreThisRound = curRoundData.scores ? curRoundData.scores[meUid] : null;
-      const waitingOnOpp = myScoreThisRound != null;
-      const msg = waitingOnOpp
-        ? `Round ${c.round} recorded — waiting for ${oppName}.`
-        : `Round ${c.round} of ${totalRounds}: record your <strong>${MOVE_LABELS[c.move]||c.move}</strong> take now on the Stage tab.`;
+      const isTeams = c.matchType === 'teams';
+      const wins = c.wins || {};
+
+      let scoreboardHtml;
+      if(isTeams){
+        scoreboardHtml = `<p>Team A ${wins.A||0} – ${wins.B||0} Team B</p>`;
+      } else {
+        const sorted = [...participants].sort((a,b) => (wins[b]||0) - (wins[a]||0));
+        scoreboardHtml = `<div style="display:flex; flex-direction:column; gap:4px; margin-bottom:10px;">` +
+          sorted.map(u => `<div style="display:flex; justify-content:space-between; font-size:12px;"><span>${u===meUid?'You':(c.names?.[u]||'Player')}</span><span style="color:var(--gold);">${wins[u]||0} win${(wins[u]||0)===1?'':'s'}</span></div>`).join('') +
+          `</div>`;
+      }
+
+      const roundsHtml = roundsData.map((r,i)=>{
+        const submittedCount = Object.keys(r.scores||{}).length;
+        const isCurrent = (c.round-1) === i;
+        const done = submittedCount === participants.length;
+        return `<div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--panel-tint); border-radius:8px; font-size:11.5px;"><span>Round ${i+1}</span><span style="color:var(--sub-text);">${submittedCount}/${participants.length} in ${isCurrent && !done ? '▶' : (done ? '✓' : '')}</span></div>`;
+      }).join('');
+
+      const msg = myScoreThisRound != null
+        ? `Round ${c.round} recorded — waiting for the others.`
+        : `Round ${c.round} of ${totalRounds}: record your <strong>${matchLabel(c)}</strong> take now${c.moveMode==='combo' ? ' on the Combo tab' : ' on the Stage tab'}.`;
+
       activeChallengeArea.innerHTML = `
         <div class="challenge-banner">
-          <div class="cb-title">⚔️ Best of ${totalRounds}: ${MOVE_LABELS[c.move]||c.move}</div>
-          <p>You ${myWins} – ${oppWins} ${oppName}</p>
+          <div class="cb-title">⚔️ ${modeLabel(c)} · ${matchLabel(c)}</div>
+          ${scoreboardHtml}
           <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:10px;">${roundsHtml}</div>
           <p>${msg}</p>
         </div>
@@ -3628,25 +3880,48 @@
     }
 
     if(c.status === 'done'){
-      const overallWinnerUid = myWins === oppWins ? null : (myWins > oppWins ? meUid : oppUid);
-      const overallWinnerName = overallWinnerUid === null ? null : (overallWinnerUid === meUid ? 'You' : oppName);
+      exitActiveMatchUI(challengeId, c);
+      const isTeams = c.matchType === 'teams';
+      const wins = c.wins || {};
+      let resultHtml, iWon = false;
+
+      if(isTeams){
+        const myTeam = (c.teamOf||{})[meUid];
+        const winsA = wins.A||0, winsB = wins.B||0;
+        const winnerTeam = winsA === winsB ? null : (winsA > winsB ? 'A' : 'B');
+        iWon = winnerTeam === myTeam;
+        resultHtml = `
+          <div class="vs-row">
+            <div class="vs-player"><div class="vs-name">Team A</div><div class="vs-score">${winsA}</div></div>
+            <div class="vs-divider">VS</div>
+            <div class="vs-player"><div class="vs-name">Team B</div><div class="vs-score">${winsB}</div></div>
+          </div>
+          <p>${winnerTeam ? `Team ${winnerTeam} wins the match!${iWon ? ' 🎉' : ''}` : "It's a tie match!"}</p>
+        `;
+      } else {
+        const sorted = [...participants].sort((a,b) => (wins[b]||0) - (wins[a]||0));
+        const topWins = wins[sorted[0]] || 0;
+        const winners = sorted.filter(u => (wins[u]||0) === topWins && topWins > 0);
+        iWon = winners.includes(meUid);
+        resultHtml = `
+          <div style="display:flex; flex-direction:column; gap:6px; margin:10px 0;">
+            ${sorted.map((u,i) => `<div style="display:flex; justify-content:space-between; padding:6px 10px; background:var(--panel-tint); border-radius:8px; font-size:12.5px;"><span>${i===0&&topWins>0?'🏆 ':''}${u===meUid?'You':(c.names?.[u]||'Player')}</span><span style="color:var(--gold);">${wins[u]||0} win${(wins[u]||0)===1?'':'s'}</span></div>`).join('')}
+          </div>
+          <p>${winners.length ? `${winners.map(u=>u===meUid?'You':(c.names?.[u]||'Player')).join(' & ')} win${winners.length===1?'s':''} the match!` : "It's a tie match!"}</p>
+        `;
+      }
+
       activeChallengeArea.innerHTML = `
         <div class="challenge-banner">
           <div class="cb-title">🏆 Match Result</div>
-          <div class="vs-row">
-            <div class="vs-player"><div class="vs-name">You</div><div class="vs-score">${myWins}</div></div>
-            <div class="vs-divider">VS</div>
-            <div class="vs-player"><div class="vs-name">${oppName}</div><div class="vs-score">${oppWins}</div></div>
-          </div>
-          <div style="display:flex; flex-direction:column; gap:6px; margin:12px 0;">${roundsHtml}</div>
-          <p>${overallWinnerName ? `${overallWinnerName} win${overallWinnerName==='You'?'':'s'} the match ${Math.max(myWins,oppWins)}-${Math.min(myWins,oppWins)}!` : "It's a tie match!"}</p>
+          ${resultHtml}
           <div class="cb-actions"><button class="btn-ghost" id="dismissChallengeBtn">Dismiss</button></div>
         </div>
       `;
       const dismissBtn = document.getElementById('dismissChallengeBtn');
       if(dismissBtn) dismissBtn.addEventListener('click', ()=>{ activeChallengeArea.innerHTML=''; });
-      if(overallWinnerUid === meUid) SFX.newBest();
-      else if(overallWinnerUid) playScoreSfx(4);
+      if(iWon) SFX.newBest();
+      else playScoreSfx(4);
     }
   }
 
@@ -3659,31 +3934,46 @@
         const c = snap.data();
         if(c.status !== 'active') return;
 
-        const totalRounds = c.totalRounds || CHALLENGE_TOTAL_ROUNDS;
-        const roundsData = (c.roundsData || []).map(r => ({ scores: { ...(r.scores||{}) }, winnerUid: r.winnerUid || null }));
+        const participants = c.participants || [];
+        if(!participants.includes(currentUser.uid)) return;
+
+        const totalRounds = c.totalRounds || 1;
+        const roundsData = (c.roundsData || []).map(r => ({ scores: { ...(r.scores||{}) } }));
         const roundIdx = c.round - 1;
         if(!roundsData[roundIdx]) return;
 
         roundsData[roundIdx].scores[currentUser.uid] = score;
         const rScores = roundsData[roundIdx].scores;
-        const bothIn = rScores[c.fromUid] != null && rScores[c.toUid] != null;
+        const allIn = participants.every(u => rScores[u] != null);
 
         const wins = { ...(c.wins||{}) };
         let nextRound = c.round;
         let status = 'active';
 
-        if(bothIn && roundsData[roundIdx].winnerUid == null){
-          const fromS = rScores[c.fromUid], toS = rScores[c.toUid];
-          const roundWinner = fromS > toS ? c.fromUid : (toS > fromS ? c.toUid : 'tie');
-          roundsData[roundIdx].winnerUid = roundWinner;
-          if(roundWinner !== 'tie'){
-            wins[roundWinner] = (wins[roundWinner] || 0) + 1;
-          }
-          if(c.round < totalRounds){
-            nextRound = c.round + 1;
+        if(allIn){
+          if(c.matchType === 'teams'){
+            const teamOf = c.teamOf || {};
+            let sumA=0, cntA=0, sumB=0, cntB=0;
+            participants.forEach(u=>{
+              const s = rScores[u];
+              if(teamOf[u] === 'B'){ sumB += s; cntB++; } else { sumA += s; cntA++; }
+            });
+            const avgA = cntA ? sumA/cntA : 0;
+            const avgB = cntB ? sumB/cntB : 0;
+            if(avgA > avgB) wins.A = (wins.A||0) + 1;
+            else if(avgB > avgA) wins.B = (wins.B||0) + 1;
           } else {
-            status = 'done';
+            let best = -Infinity, bestUid = null, tie = false;
+            participants.forEach(u=>{
+              const s = rScores[u];
+              if(s > best){ best = s; bestUid = u; tie = false; }
+              else if(s === best){ tie = true; }
+            });
+            if(bestUid && !tie){ wins[bestUid] = (wins[bestUid]||0) + 1; }
           }
+
+          if(c.round < totalRounds){ nextRound = c.round + 1; }
+          else { status = 'done'; }
         }
 
         tx.update(ref, { roundsData, wins, round: nextRound, status });
