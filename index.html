@@ -527,6 +527,7 @@
   #tabTutorial.active{ background:var(--teal); color:#1a1305; }
   #tabFriends.active{ background:var(--azure); color:#1a1305; }
   #tabSuggest.active{ background:var(--coral); color:#2b0f0c; }
+  #tabLeaderboard.active{ background:var(--lime); color:#151d05; }
 
   .panel{ width:100%; max-width:560px; display:flex; flex-direction:column; align-items:center; }
   .panel.hidden{ display:none; }
@@ -910,6 +911,7 @@
   <button class="top-tab" id="tabCombo">Combo</button>
   <button class="top-tab" id="tabVoice">Voice Match</button>
   <button class="top-tab" id="tabFriends">Friends</button>
+  <button class="top-tab" id="tabLeaderboard">Leaderboard</button>
   <button class="top-tab" id="tabTutorial">How To Play</button>
   <button class="top-tab" id="tabSuggest">Suggestions</button>
 </div>
@@ -1468,6 +1470,32 @@
   </div>
 </div>
 
+<div class="panel hidden" id="leaderboardPanel">
+  <div class="tutorial-panel" style="text-align:center;">
+    <div class="move-name" style="color:var(--lime);">LEADERBOARD</div>
+    <p style="font-size:12.5px; color:var(--sub-text); line-height:1.6; max-width:440px; margin:0 auto 18px;">
+      Ranks you against your friends. Log in on the Friends tab to see it — scores and match records sync automatically as you play.
+    </p>
+
+    <div id="leaderboardLoggedOut" style="display:none;">
+      <div class="field-hint">You're not logged in yet — head to the Friends tab to sign in or create an account.</div>
+    </div>
+
+    <div id="leaderboardLoggedIn" style="display:none; text-align:left; max-width:440px; margin:0 auto;">
+      <div class="field-row">
+        <label style="text-align:center;">Rank By</label>
+        <select id="leaderboardMoveSelect" class="combo-select">
+          <option value="__overall__">Overall Best Score</option>
+        </select>
+      </div>
+      <div class="friend-list" id="leaderboardScoreList" style="margin-bottom:24px;"></div>
+
+      <div class="move-name" style="color:var(--lime); text-align:center; margin-top:6px;">MATCH RECORD</div>
+      <div class="friend-list" id="leaderboardMatchList" style="margin-top:10px;"></div>
+    </div>
+  </div>
+</div>
+
 </div><!-- /app-container -->
 
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5.1675469404/pose.js"></script>
@@ -1542,7 +1570,8 @@
     circleglide: 'Circle Glide',
     jacksonshuffle: 'Jackson Shuffle',
     fedoratilt: 'Fedora Tilt',
-    sidewalk: 'Side Walk'
+    sidewalk: 'Side Walk',
+    combo: 'Combo Routine'
   };
 
   const MOVE_TIPS = {
@@ -2053,6 +2082,8 @@
   const suggestPanel = document.getElementById('suggestPanel');
   const tabFriends = document.getElementById('tabFriends');
   const friendsPanel = document.getElementById('friendsPanel');
+  const tabLeaderboard = document.getElementById('tabLeaderboard');
+  const leaderboardPanel = document.getElementById('leaderboardPanel');
   const stageWrapHome = document.getElementById('stageWrapHome');
   const comboStageSlot = document.getElementById('comboStageSlot');
 
@@ -2061,12 +2092,14 @@
     tabCombo.classList.toggle('active', which==='combo');
     tabVoice.classList.toggle('active', which==='voice');
     tabFriends.classList.toggle('active', which==='friends');
+    tabLeaderboard.classList.toggle('active', which==='leaderboard');
     tabTutorial.classList.toggle('active', which==='tutorial');
     tabSuggest.classList.toggle('active', which==='suggest');
     stagePanel.classList.toggle('hidden', which!=='stage');
     comboPanel.classList.toggle('hidden', which!=='combo');
     voicePanel.classList.toggle('hidden', which!=='voice');
     friendsPanel.classList.toggle('hidden', which!=='friends');
+    leaderboardPanel.classList.toggle('hidden', which!=='leaderboard');
     tutorialPanel.classList.toggle('hidden', which!=='tutorial');
     suggestPanel.classList.toggle('hidden', which!=='suggest');
 
@@ -2081,6 +2114,7 @@
   tabCombo.addEventListener('click', ()=> { showPanel('combo'); initComboSelects(); });
   tabVoice.addEventListener('click', ()=> showPanel('voice'));
   tabFriends.addEventListener('click', ()=> showPanel('friends'));
+  tabLeaderboard.addEventListener('click', ()=> { showPanel('leaderboard'); renderLeaderboard(); });
   tabTutorial.addEventListener('click', ()=> showPanel('tutorial'));
   tabSuggest.addEventListener('click', ()=> { showPanel('suggest'); renderSuggestions(); });
 
@@ -2331,6 +2365,7 @@
       scoreLog.push({move: 'combo', score: finalScore, t: Date.now()});
       try{ localStorage.setItem('mj_scores', JSON.stringify(scoreLog)); }catch(e){}
       renderHistory();
+      syncBestScoreToCloud('combo', finalScore);
 
       if(activeChallengeId){
         submitChallengeScore(activeChallengeId, finalScore);
@@ -2845,6 +2880,7 @@
     localStorage.setItem('mj_scores', JSON.stringify(scoreLog));
     renderHistory();
     updateBestBadge();
+    syncBestScoreToCloud(move, result.score);
 
     if(activeChallengeId){
       submitChallengeScore(activeChallengeId, result.score);
@@ -3881,6 +3917,7 @@
 
     if(c.status === 'done'){
       exitActiveMatchUI(challengeId, c);
+      applyMyMatchStats(challengeId);
       const isTeams = c.matchType === 'teams';
       const wins = c.wins || {};
       let resultHtml, iWon = false;
@@ -3979,6 +4016,152 @@
         tx.update(ref, { roundsData, wins, round: nextRound, status });
       });
     }catch(e){ console.error(e); }
+  }
+
+  // ---- Cloud score sync + leaderboard ----
+  async function syncBestScoreToCloud(move, score){
+    if(!currentUser || !db) return;
+    const ref = db.collection('users').doc(currentUser.uid);
+    try{
+      await db.runTransaction(async (tx)=>{
+        const snap = await tx.get(ref);
+        if(!snap.exists) return;
+        const data = snap.data();
+        const bests = { ...(data.bests||{}) };
+        const prev = bests[move] || 0;
+        if(score > prev) bests[move] = score;
+        const bestOverall = Math.max(data.bestOverall || 0, score);
+        tx.update(ref, { bests, bestOverall });
+      });
+    }catch(e){ console.error(e); }
+  }
+
+  async function applyMyMatchStats(challengeId){
+    if(!currentUser || !db) return;
+    const meUid = currentUser.uid;
+    const challengeRef = db.collection('challenges').doc(challengeId);
+    const userRef = db.collection('users').doc(meUid);
+    try{
+      await db.runTransaction(async (tx)=>{
+        const cSnap = await tx.get(challengeRef);
+        const uSnap = await tx.get(userRef);
+        if(!cSnap.exists || !uSnap.exists) return;
+        const c = cSnap.data();
+        if(c.status !== 'done') return;
+        if((c.statsAppliedFor||[]).includes(meUid)) return;
+
+        let result = 'tie';
+        if(c.matchType === 'teams'){
+          const myTeam = (c.teamOf||{})[meUid];
+          const winsA = (c.wins||{}).A || 0, winsB = (c.wins||{}).B || 0;
+          if(winsA !== winsB){
+            result = ((winsA > winsB && myTeam === 'A') || (winsB > winsA && myTeam === 'B')) ? 'win' : 'loss';
+          }
+        } else {
+          const wins = c.wins || {};
+          const participants = c.participants || [];
+          const topWins = Math.max(0, ...participants.map(u => wins[u]||0));
+          const winners = participants.filter(u => (wins[u]||0) === topWins && topWins > 0);
+          if(winners.length === 1) result = winners[0] === meUid ? 'win' : 'loss';
+          else if(winners.length > 1) result = winners.includes(meUid) ? 'win' : 'loss';
+        }
+
+        const stats = { ...(uSnap.data().matchStats || { wins:0, losses:0, ties:0 }) };
+        if(result === 'win') stats.wins = (stats.wins||0) + 1;
+        else if(result === 'loss') stats.losses = (stats.losses||0) + 1;
+        else stats.ties = (stats.ties||0) + 1;
+
+        tx.update(userRef, { matchStats: stats });
+        tx.update(challengeRef, { statsAppliedFor: firebase.firestore.FieldValue.arrayUnion(meUid) });
+      });
+    }catch(e){ console.error(e); }
+  }
+
+  const leaderboardLoggedOut = document.getElementById('leaderboardLoggedOut');
+  const leaderboardLoggedIn = document.getElementById('leaderboardLoggedIn');
+  const leaderboardMoveSelect = document.getElementById('leaderboardMoveSelect');
+  const leaderboardScoreList = document.getElementById('leaderboardScoreList');
+  const leaderboardMatchList = document.getElementById('leaderboardMatchList');
+  let leaderboardOptionsBuilt = false;
+
+  function buildLeaderboardMoveOptions(){
+    if(leaderboardOptionsBuilt) return;
+    Object.entries(MOVE_LABELS).forEach(([value,label])=>{
+      const opt = document.createElement('option');
+      opt.value = value;
+      opt.textContent = label;
+      leaderboardMoveSelect.appendChild(opt);
+    });
+    leaderboardOptionsBuilt = true;
+  }
+  leaderboardMoveSelect.addEventListener('change', renderLeaderboard);
+
+  async function renderLeaderboard(){
+    if(!currentUser || !db){
+      leaderboardLoggedOut.style.display = 'block';
+      leaderboardLoggedIn.style.display = 'none';
+      return;
+    }
+    leaderboardLoggedOut.style.display = 'none';
+    leaderboardLoggedIn.style.display = 'block';
+    buildLeaderboardMoveOptions();
+
+    const uids = [currentUser.uid, ...(currentUser.friends||[])];
+    const chunks = [];
+    for(let i=0;i<uids.length;i+=10) chunks.push(uids.slice(i,i+10));
+
+    let docs = [];
+    for(const chunk of chunks){
+      const snap = await db.collection('users').where(firebase.firestore.FieldPath.documentId(), 'in', chunk).get();
+      snap.forEach(d => docs.push({ id: d.id, ...d.data() }));
+    }
+
+    const moveKey = leaderboardMoveSelect.value;
+    const scored = docs
+      .map(d => ({ id: d.id, name: d.id===currentUser.uid ? 'You' : `${d.firstName} ${d.lastName}`, score: moveKey === '__overall__' ? (d.bestOverall||0) : ((d.bests||{})[moveKey]||0) }))
+      .filter(d => d.score > 0)
+      .sort((a,b) => b.score - a.score);
+
+    leaderboardScoreList.innerHTML = '';
+    if(!scored.length){
+      leaderboardScoreList.innerHTML = `<div class="field-hint" style="text-align:center;">No scores yet for this move — go record a take!</div>`;
+    } else {
+      scored.forEach((d,i)=>{
+        const row = document.createElement('div');
+        row.className = 'friend-row';
+        row.innerHTML = `
+          <div class="friend-info">
+            <span style="width:22px; text-align:center; color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:16px;">${i+1}</span>
+            <div class="friend-name">${d.name}</div>
+          </div>
+          <div style="color:var(--gold); font-family:'Bebas Neue',sans-serif; font-size:18px;">${d.score.toFixed(1)}</div>
+        `;
+        leaderboardScoreList.appendChild(row);
+      });
+    }
+
+    const withStats = docs
+      .map(d => ({ id: d.id, name: d.id===currentUser.uid ? 'You' : `${d.firstName} ${d.lastName}`, stats: d.matchStats || {wins:0,losses:0,ties:0} }))
+      .filter(d => (d.stats.wins + d.stats.losses + d.stats.ties) > 0)
+      .sort((a,b) => b.stats.wins - a.stats.wins);
+
+    leaderboardMatchList.innerHTML = '';
+    if(!withStats.length){
+      leaderboardMatchList.innerHTML = `<div class="field-hint" style="text-align:center;">No completed matches yet — challenge a friend from the Friends tab.</div>`;
+    } else {
+      withStats.forEach((d,i)=>{
+        const row = document.createElement('div');
+        row.className = 'friend-row';
+        row.innerHTML = `
+          <div class="friend-info">
+            <span style="width:22px; text-align:center; color:var(--mint); font-family:'Bebas Neue',sans-serif; font-size:16px;">${i+1}</span>
+            <div class="friend-name">${d.name}</div>
+          </div>
+          <div style="font-size:12px; color:var(--sub-text);">${d.stats.wins}W – ${d.stats.losses}L – ${d.stats.ties}T</div>
+        `;
+        leaderboardMatchList.appendChild(row);
+      });
+    }
   }
 
   // Restore session if this browser was previously logged in.
