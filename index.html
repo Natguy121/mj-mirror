@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Michael Jackson Mirror</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;700&display=swap');
@@ -252,7 +253,7 @@
     background:#555;
   }
   .dot.live{ background:var(--crimson); box-shadow:0 0 10px var(--crimson); animation:pulse 1.2s infinite; }
-  .dot.ready{ background:#4caf6a; box-shadow:0 0 8px #4caf6a; }
+  .dot.ready{ background:var(--mint); box-shadow:0 0 8px var(--mint); }
   @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 
   .countdown{
@@ -525,6 +526,7 @@
   #tabVoice.active{ background:var(--violet); color:#1a1305; }
   #tabTutorial.active{ background:var(--teal); color:#1a1305; }
   #tabFriends.active{ background:var(--azure); color:#1a1305; }
+  #tabSuggest.active{ background:var(--coral); color:#2b0f0c; }
 
   .panel{ width:100%; max-width:560px; display:flex; flex-direction:column; align-items:center; }
   .panel.hidden{ display:none; }
@@ -748,7 +750,7 @@
     width:100%;
   }
   .field-row input:focus{ outline:1px solid var(--azure); }
-  .field-hint{ font-size:11px; color:var(--muted-text); margin-top:4px; line-height:1.5; }
+  .field-hint{ font-size:11px; color:var(--sequin); margin-top:4px; line-height:1.5; }
   .field-error{ font-size:11.5px; color:#e6899a; margin-top:6px; min-height:14px; }
   .name-taken-box{
     background:rgba(232,185,63,0.08);
@@ -775,7 +777,7 @@
     gap:12px;
   }
   .profile-name{ font-family:'Bebas Neue', sans-serif; font-size:26px; letter-spacing:0.03em; }
-  .profile-code{ font-size:12px; color:var(--azure); letter-spacing:0.03em; }
+  .profile-code{ font-size:12px; color:var(--sky); letter-spacing:0.03em; }
 
   .add-friend-row{
     width:100%;
@@ -815,7 +817,7 @@
   }
   .friend-info{ display:flex; align-items:center; gap:10px; }
   .friend-status-dot{ width:9px; height:9px; border-radius:50%; background:#555; flex-shrink:0; }
-  .friend-status-dot.online{ background:#4caf6a; box-shadow:0 0 8px #4caf6a; }
+  .friend-status-dot.online{ background:var(--mint); box-shadow:0 0 8px var(--mint); }
   .friend-name{ font-size:13.5px; }
   .friend-code{ font-size:10.5px; color:var(--muted-text); }
   .friend-actions{ display:flex; gap:6px; }
@@ -1239,7 +1241,7 @@
       Camera isn't on yet — go to the Stage tab and tap "Step On Stage" first.
     </div>
 
-    <div class="badge" id="comboStepBadge" style="display:inline-flex; margin-bottom:12px;">Ready</div>
+    <div class="badge" id="comboStepBadge" style="display:inline-flex; margin-bottom:12px; color:var(--sun); border-color:var(--sun);">Ready</div>
 
     <div class="controls" style="max-width:360px; margin:0 auto;">
       <button class="btn-primary" id="comboRecordBtn" style="background:linear-gradient(180deg, var(--violet), #6b4a9e);">Start Combo</button>
@@ -2045,12 +2047,33 @@
   }
 
   modeButtons.forEach(btn=>{
+    // A manual tap always wins from here on — remember it so auto-detection
+    // never overrides a choice the person actually made.
     btn.addEventListener('click', ()=> applyMode(btn.dataset.mode));
   });
 
-  let savedMode = 'phone';
-  try{ savedMode = localStorage.getItem('mj_layout_mode') || 'phone'; }catch(e){}
-  applyMode(savedMode);
+  function detectDeviceMode(){
+    const ua = navigator.userAgent || '';
+    const isIPhone = /iPhone|iPod/.test(ua);
+    // iPadOS reports as "Macintosh" in its UA string, so a touch-capable
+    // "Mac" is really an iPad, not a desktop.
+    const isIPad = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+    if(isIPhone) return 'phone';
+    if(isIPad) return 'ipad';
+    const isAndroidPhone = /Android/.test(ua) && /Mobile/.test(ua);
+    if(isAndroidPhone) return 'phone';
+    const isAndroidTablet = /Android/.test(ua) && !/Mobile/.test(ua);
+    if(isAndroidTablet) return 'ipad';
+    // Fallback for anything else: go by viewport width.
+    const w = window.innerWidth;
+    if(w < 700) return 'phone';
+    if(w < 1024) return 'ipad';
+    return 'desktop';
+  }
+
+  let savedMode = null;
+  try{ savedMode = localStorage.getItem('mj_layout_mode'); }catch(e){}
+  applyMode(savedMode || detectDeviceMode());
 
   function updateSoundToggleLabel(){
     soundToggle.textContent = soundOn ? '🔊 Sound On' : '🔇 Sound Off';
@@ -3546,10 +3569,17 @@
     const played = mine != null && theirs != null;
     const mineTxt = mine != null ? mine.toFixed(1) : '—';
     const theirsTxt = theirs != null ? theirs.toFixed(1) : '—';
-    const outcome = played ? (mine > theirs ? '✓' : (mine < theirs ? '✗' : '·')) : (isCurrent ? '▶' : '');
+    let outcome = '', outcomeColor = 'var(--sky)';
+    if(played){
+      if(mine > theirs){ outcome = '✓'; outcomeColor = 'var(--mint)'; }
+      else if(mine < theirs){ outcome = '✗'; outcomeColor = 'var(--rubyred)'; }
+      else { outcome = '·'; outcomeColor = 'var(--champagne)'; }
+    } else if(isCurrent){
+      outcome = '▶';
+    }
     return `<div style="display:flex; justify-content:space-between; align-items:center; padding:7px 10px; background:var(--panel-tint); border-radius:8px; font-size:12px;">
       <span>${label}</span>
-      <span style="color:var(--sub-text);">${mineTxt} <span style="color:var(--faint-text);">–</span> ${theirsTxt} <span style="margin-left:6px; color:var(--gold);">${outcome}</span></span>
+      <span style="color:var(--sub-text);">${mineTxt} <span style="color:var(--faint-text);">–</span> ${theirsTxt} <span style="margin-left:6px; color:${outcomeColor};">${outcome}</span></span>
     </div>`;
   }
 
