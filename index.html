@@ -1423,6 +1423,7 @@
       <button class="btn-ghost" id="logoutBtn" style="font-size:13px; padding:8px 16px;">Log Out</button>
     </div>
 
+    <div id="incomingFriendRequestsArea"></div>
     <div id="incomingChallengeArea"></div>
     <div id="activeChallengeArea"></div>
 
@@ -3252,6 +3253,7 @@
   const addFriendError = document.getElementById('addFriendError');
   const friendList = document.getElementById('friendList');
   const friendsEmptyState = document.getElementById('friendsEmptyState');
+  const incomingFriendRequestsArea = document.getElementById('incomingFriendRequestsArea');
   const incomingChallengeArea = document.getElementById('incomingChallengeArea');
   const activeChallengeArea = document.getElementById('activeChallengeArea');
 
@@ -3293,6 +3295,7 @@
   let currentUser = null; // {uid, firstName, lastName, tag, friends:[]}
   let friendsUnsub = null;
   let incomingUnsub = null;
+  let friendRequestsUnsub = null;
   let activeChallengeUnsub = null;
   let activeChallengeId = null;
   let heartbeatTimer = null;
@@ -3458,6 +3461,7 @@
     startHeartbeat();
     listenToFriends();
     listenToIncomingChallenges();
+    listenToIncomingFriendRequests();
   }
 
   function startHeartbeat(){
@@ -3546,19 +3550,75 @@
       if(!snap.exists){ addFriendError.textContent = 'No account found with that friend code.'; return; }
       if((currentUser.friends||[]).includes(targetId)){ addFriendError.textContent = "You're already friends."; return; }
 
-      await db.collection('users').doc(currentUser.uid).update({
-        friends: firebase.firestore.FieldValue.arrayUnion(targetId)
-      });
-      await db.collection('users').doc(targetId).update({
-        friends: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+      const [outgoing, incoming] = await Promise.all([
+        db.collection('friendRequests').where('status','==','pending').where('fromUid','==',currentUser.uid).where('toUid','==',targetId).get(),
+        db.collection('friendRequests').where('status','==','pending').where('fromUid','==',targetId).where('toUid','==',currentUser.uid).get()
+      ]);
+      if(!outgoing.empty || !incoming.empty){ addFriendError.textContent = "There's already a pending request between you two."; return; }
+
+      const targetData = snap.data();
+      await db.collection('friendRequests').add({
+        fromUid: currentUser.uid,
+        fromName: `${currentUser.firstName} ${currentUser.lastName}`,
+        toUid: targetId,
+        toName: `${targetData.firstName} ${targetData.lastName}`,
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
       addFriendInput.value = '';
+      addFriendError.style.color = 'var(--mint)';
+      addFriendError.textContent = 'Friend request sent — waiting for them to accept.';
       SFX.click();
     }catch(e){
       console.error(e);
-      addFriendError.textContent = 'Could not add friend — try again.';
+      addFriendError.style.color = '';
+      addFriendError.textContent = 'Could not send friend request — try again.';
     }
   });
+
+  function listenToIncomingFriendRequests(){
+    if(friendRequestsUnsub) friendRequestsUnsub();
+    friendRequestsUnsub = db.collection('friendRequests')
+      .where('toUid', '==', currentUser.uid)
+      .where('status', '==', 'pending')
+      .onSnapshot(snap=>{
+        incomingFriendRequestsArea.innerHTML = '';
+        snap.forEach(d=>{
+          const r = d.data();
+          const banner = document.createElement('div');
+          banner.className = 'challenge-banner';
+          banner.innerHTML = `
+            <div class="cb-title">🤝 Friend Request</div>
+            <p><strong>${r.fromName}</strong> wants to add you as a friend.</p>
+            <div class="cb-actions">
+              <button class="btn-primary" data-accept="${d.id}">Accept</button>
+              <button class="btn-ghost" data-decline="${d.id}">Decline</button>
+            </div>
+          `;
+          banner.querySelector('[data-accept]').addEventListener('click', ()=> respondToFriendRequest(d.id, r.fromUid, true));
+          banner.querySelector('[data-decline]').addEventListener('click', ()=> respondToFriendRequest(d.id, r.fromUid, false));
+          incomingFriendRequestsArea.appendChild(banner);
+        });
+      });
+  }
+
+  async function respondToFriendRequest(requestId, fromUid, accept){
+    const reqRef = db.collection('friendRequests').doc(requestId);
+    try{
+      if(accept){
+        await db.collection('users').doc(currentUser.uid).update({
+          friends: firebase.firestore.FieldValue.arrayUnion(fromUid)
+        });
+        await db.collection('users').doc(fromUid).update({
+          friends: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+        });
+        await reqRef.update({ status: 'accepted' });
+        SFX.click();
+      } else {
+        await reqRef.update({ status: 'declined' });
+      }
+    }catch(e){ console.error(e); }
+  }
 
   async function removeFriend(targetId){
     try{
@@ -3574,6 +3634,7 @@
   logoutBtn.addEventListener('click', ()=>{
     if(friendsUnsub) friendsUnsub();
     if(incomingUnsub) incomingUnsub();
+    if(friendRequestsUnsub) friendRequestsUnsub();
     if(activeChallengeUnsub) activeChallengeUnsub();
     stopHeartbeat();
     currentUser = null;
@@ -3581,6 +3642,7 @@
     try{ localStorage.removeItem('mj_session_uid'); }catch(e){}
     friendsArea.style.display = 'none';
     authArea.style.display = 'block';
+    incomingFriendRequestsArea.innerHTML = '';
     incomingChallengeArea.innerHTML = '';
     activeChallengeArea.innerHTML = '';
   });
