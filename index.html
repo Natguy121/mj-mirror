@@ -3551,7 +3551,7 @@
 
   // ---- Matches: 1v1, free-for-all with more people, and teams (2v2, etc) ----
   const SINGLE_MOVE_ROUNDS = 3;   // best-of-3 for single-move matches
-  const COMBO_MATCH_ROUNDS = 1;   // one full combo run per match
+  const COMBO_MATCH_ROUNDS = 3;   // best-of-3 full combo runs per match
 
   const matchBuilderCard = document.getElementById('matchBuilderCard');
   const matchFriendChecklist = document.getElementById('matchFriendChecklist');
@@ -3583,7 +3583,7 @@
       btn.classList.add('active');
       currentMoveMode = btn.dataset.mode;
       matchMoveHint.textContent = currentMoveMode === 'combo'
-        ? `One round using whatever moves are currently set up on the Combo tab (${comboSelects.length ? comboSelects.map(s=>MOVE_LABELS[s.value]).join(' → ') : 'set that up first'}).`
+        ? `Best of ${COMBO_MATCH_ROUNDS} rounds using whatever moves are currently set up on the Combo tab (${comboSelects.length ? comboSelects.map(s=>MOVE_LABELS[s.value]).join(' → ') : 'set that up first'}).`
         : `Best of ${SINGLE_MOVE_ROUNDS} rounds of whatever move is selected on the Stage tab (${MOVE_LABELS[moveSelect.value]}).`;
     });
   });
