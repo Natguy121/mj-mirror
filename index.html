@@ -966,6 +966,7 @@
 <div class="controls">
   <select id="moveSelect">
     <option value="moonwalk">Moonwalk</option>
+    <option value="moonwalkinplace">Moonwalk In Place</option>
     <option value="spin">The Spin</option>
     <option value="lean">Anti-Gravity Lean</option>
     <option value="pointfreeze">Point &amp; Freeze</option>
@@ -1055,6 +1056,15 @@
             <div class="yt-tag">Watch on YouTube</div>
           </a>
           <div class="ref-caption">Reference: Michael Jackson performing the Moonwalk.</div>
+        </div>
+        <div class="move-card">
+          <h3>Moonwalk In Place <span class="diff mid">Medium</span></h3>
+          <p>The same sliding-foot illusion as the Moonwalk, but anchored to one spot instead of traveling backward — your feet do all the work while your body stays put. Scored on glide, staying put, smoothness and energy.</p>
+          <a class="ref-video generic" href="https://www.youtube.com/results?search_query=michael+jackson+moonwalk+in+place" target="_blank" rel="noopener">
+            <div class="play-badge"><span></span></div>
+            <div class="yt-tag">Search YouTube</div>
+          </a>
+          <div class="ref-caption">Reference: a stationary moonwalk variation.</div>
         </div>
         <div class="move-card">
           <h3>The Spin <span class="diff mid">Medium</span></h3>
@@ -1554,6 +1564,7 @@
 
   const MOVE_LABELS = {
     moonwalk: 'Moonwalk',
+    moonwalkinplace: 'Moonwalk In Place',
     spin: 'The Spin',
     lean: 'Anti-Gravity Lean',
     pointfreeze: 'Point & Freeze',
@@ -1581,6 +1592,12 @@
       "Push off with the ball of your back foot, not your heel, for that gliding look.",
       "Slow it down slightly — smoothness reads better on camera than speed.",
       "Keep your knees soft and slightly bent throughout the slide."
+    ],
+    moonwalkinplace: [
+      "Same sliding footwork as the moonwalk, but keep your hips and shoulders anchored over one spot — nothing should actually travel across the frame.",
+      "Small, controlled foot slides work better here than big strides, since a big stride tends to carry your whole body backward.",
+      "Keep your knees soft and let your back foot do most of the gliding motion.",
+      "If you catch yourself drifting backward, shorten the slide until you're gliding in place instead of walking."
     ],
     spin: [
       "Spot a fixed point with your eyes to stay balanced through the turn.",
@@ -1988,6 +2005,7 @@
 
   const SELF_JUDGE_METRICS = {
     moonwalk: ['Glide (feet looked like they slid)', 'Smoothness (no jerky bounce)', 'Torso control (upper body stayed still)', 'Overall energy'],
+    moonwalkinplace: ['Glide (feet looked like they slid)', 'Staying put (no real travel across the floor)', 'Smoothness (no jerky bounce)', 'Overall energy'],
     spin: ['Speed of the whip turn', 'Smoothness through rotation', 'Balance on the landing', 'Clean finish pose'],
     lean: ['How far you leaned', 'How long you held it', 'Straight-line body control', 'Smooth recovery'],
     pointfreeze: ['Speed of the snap into pose', 'Stillness of the freeze', 'Full extension', 'Confidence of the pose'],
@@ -2723,6 +2741,10 @@
       torsoDrift += dist(torsoStability[i-1], torsoStability[i]);
     }
     const torsoDriftAvg = torsoDrift / Math.max(1,torsoStability.length);
+    // net displacement from start to end — high for a normal moonwalk
+    // (which is supposed to travel), should stay near zero for the
+    // in-place variant even while the feet are still sliding.
+    const netTravel = torsoStability.length > 1 ? dist(torsoStability[0], torsoStability[torsoStability.length-1]) : 0;
 
     const maxArmExt = Math.max(...armExtension, 0);
     const avgAnkleAsym = ankleAsymmetry.reduce((a,b)=>a+b,0) / Math.max(1,ankleAsymmetry.length);
@@ -2754,6 +2776,7 @@
     let stage = targetCurve(maxArmExt, 0.32, 0.22) * attemptGate;
     let hold = Math.pow(Math.max(0, holdStability), 1.4);
     let slideFeel = targetCurve(avgAnkleAsym, 0.16, 0.13) * attemptGate;
+    let stayPut = Math.pow(Math.max(0, 1 - netTravel*10), 1.5) * attemptGate;
 
     const legGate = regionGate(legShare, 0.42);
     const armGate = regionGate(armShare, 0.42);
@@ -2762,6 +2785,10 @@
     let metrics;
     if(move === 'moonwalk'){
       metrics = { Glide: slideFeel * legGate, Smoothness: flow * legGate, Control: control, Energy: energy * legGate };
+    } else if(move === 'moonwalkinplace'){
+      // same sliding-foot mechanic as the moonwalk, but scored for staying
+      // anchored to one spot instead of traveling backward across the frame
+      metrics = { Glide: slideFeel * legGate, 'Staying Put': stayPut * legGate, Smoothness: flow * legGate, Energy: energy * legGate };
     } else if(move === 'spin'){
       metrics = { Energy: energy, Smoothness: flow, Balance: control, Finish: hold };
     } else if(move === 'lean'){
