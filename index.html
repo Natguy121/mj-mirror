@@ -1794,22 +1794,23 @@
   let musicTimer = null;
   let musicStep = 0;
 
-  function synthKick(t){
+  function synthKick(t, punchy=false){
     const actx = getSfxCtx();
     const osc = actx.createOscillator();
     const gain = actx.createGain();
     osc.type = 'sine';
-    osc.frequency.setValueAtTime(150, t);
+    osc.frequency.setValueAtTime(punchy ? 175 : 150, t);
     osc.frequency.exponentialRampToValueAtTime(45, t + 0.12);
-    gain.gain.setValueAtTime(0.35, t);
+    gain.gain.setValueAtTime(punchy ? 0.42 : 0.35, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
     osc.connect(gain); gain.connect(actx.destination);
     osc.start(t); osc.stop(t + 0.16);
   }
 
-  function synthHat(t, volume=0.08){
+  function synthHat(t, volume=0.08, open=false){
     const actx = getSfxCtx();
-    const bufferSize = actx.sampleRate * 0.04;
+    const decay = open ? 0.14 : 0.04;
+    const bufferSize = actx.sampleRate * decay;
     const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
     const data = buffer.getChannelData(0);
     for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
@@ -1819,38 +1820,85 @@
     hp.type = 'highpass'; hp.frequency.value = 7000;
     const gain = actx.createGain();
     gain.gain.setValueAtTime(volume, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + decay);
     src.connect(hp); hp.connect(gain); gain.connect(actx.destination);
     src.start(t);
   }
 
-  function synthBassNote(t, freq, duration=0.18){
+  // Snare/clap-style backbeat hit — bandpassed noise burst, punchier and
+  // longer than the hi-hat so it lands as a distinct backbeat accent.
+  function synthClap(t, volume=0.16){
+    const actx = getSfxCtx();
+    const decay = 0.16;
+    const bufferSize = actx.sampleRate * decay;
+    const buffer = actx.createBuffer(1, bufferSize, actx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+    const src = actx.createBufferSource();
+    src.buffer = buffer;
+    const bp = actx.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.value = 1800; bp.Q.value = 0.8;
+    const gain = actx.createGain();
+    gain.gain.setValueAtTime(volume, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + decay);
+    src.connect(bp); bp.connect(gain); gain.connect(actx.destination);
+    src.start(t);
+  }
+
+  function synthBassNote(t, freq, duration=0.18, volume=0.1){
     const actx = getSfxCtx();
     const osc = actx.createOscillator();
     const gain = actx.createGain();
     osc.type = 'triangle';
     osc.frequency.setValueAtTime(freq, t);
     gain.gain.setValueAtTime(0, t);
-    gain.gain.linearRampToValueAtTime(0.1, t + 0.01);
+    gain.gain.linearRampToValueAtTime(volume, t + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
     osc.connect(gain); gain.connect(actx.destination);
     osc.start(t); osc.stop(t + duration + 0.02);
   }
 
-  const BASS_NOTES = [82.4, 82.4, 110, 82.4, 98, 82.4, 73.4, 82.4];
-  const KICK_STEPS = [1,0,0,1,0,1,0,0];
-  const HAT_STEPS =  [1,1,1,1,1,1,1,1];
+  // Short funky synth stab for the melodic hook — square wave through a
+  // lowpass filter for a punchy, percussive pluck rather than a held tone.
+  function synthStab(t, freq, duration=0.13){
+    const actx = getSfxCtx();
+    const osc = actx.createOscillator();
+    const filter = actx.createBiquadFilter();
+    const gain = actx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(freq, t);
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(3200, t);
+    filter.frequency.exponentialRampToValueAtTime(900, t + duration);
+    gain.gain.setValueAtTime(0.16, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+    osc.connect(filter); filter.connect(gain); gain.connect(actx.destination);
+    osc.start(t); osc.stop(t + duration + 0.02);
+  }
+
+  // 16-step funk-inspired groove: syncopated kick, backbeat claps on 5 & 13,
+  // a busier walking bassline with passing tones, and a synth stab riff
+  // punctuating the off-beats for a catchier, more energetic loop.
+  const BASS_NOTES  = [82.4, 82.4, 98, 82.4, 110, 82.4, 98, 73.4, 82.4, 82.4, 98, 110, 73.4, 65.4, 73.4, 82.4];
+  const KICK_STEPS  = [1,0,0,1, 0,0,1,0, 1,0,0,1, 0,1,0,0];
+  const CLAP_STEPS  = [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0];
+  const HAT_STEPS   = [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
+  const OPEN_HAT_STEPS = [0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,1];
+  const STAB_STEPS  = [0,0,392,0, 0,440,0,0, 0,0,349.2,0, 440,0,494,0];
 
   function scheduleMusicStep(){
     if(!musicOn) return;
     const actx = getSfxCtx();
-    const stepDur = 0.22;
+    const stepDur = 0.19;
     const t = actx.currentTime + 0.05;
-    const i = musicStep % 8;
+    const i = musicStep % 16;
 
-    if(KICK_STEPS[i]) synthKick(t);
-    if(HAT_STEPS[i]) synthHat(t, i%2===0 ? 0.09 : 0.05);
-    synthBassNote(t, BASS_NOTES[i], stepDur*0.9);
+    if(KICK_STEPS[i]) synthKick(t, i===0);
+    if(CLAP_STEPS[i]) synthClap(t);
+    if(OPEN_HAT_STEPS[i]) synthHat(t, 0.07, true);
+    else if(HAT_STEPS[i]) synthHat(t, i%4===0 ? 0.1 : 0.05);
+    if(STAB_STEPS[i]) synthStab(t, STAB_STEPS[i]);
+    synthBassNote(t, BASS_NOTES[i], stepDur*0.9, i%4===0 ? 0.12 : 0.09);
 
     musicStep++;
     musicTimer = setTimeout(scheduleMusicStep, stepDur*1000);
